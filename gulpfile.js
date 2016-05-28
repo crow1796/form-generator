@@ -28,4 +28,5 @@ gulp.task('watch', function(){
 
 gulp.task('clean', function(){
 	del.sync(['./js/app.js']);
+	gulp.src('./js/app.js');
 });

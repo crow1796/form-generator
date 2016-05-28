@@ -1,14 +1,15 @@
 ((window, document, $, angular) ->
 
 	FormGenerator = ->
-		generator = {}
-
-		generator.restrict = 'E'
-		generator.templateUrl = 'coffee/templates/form-generator.html'
-		generator.controller = 'formGeneratorController'
-
-		generator
-
+		@restrict = 'E'
+		@templateUrl = 'coffee/templates/form-generator.html'
+		@controller = 'formGeneratorController'
+		@generatorHelper = new window.App.Helpers.Generator()
+		@link = (scope, element, attrs) ->
+			source = @generatorHelper
+						.getSourceFrom(scope, attrs.src)
+			on
+		@
 	angular.module 'form-generator'
 			.directive 'formGenerator', [FormGenerator]
 

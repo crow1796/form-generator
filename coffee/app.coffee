@@ -1,5 +1,7 @@
 ((window, document, $, angular) ->
 
+	window.App = {};
+	window.App.Helpers = {};
 	angular.module 'form-generator', []
 	
 	on
