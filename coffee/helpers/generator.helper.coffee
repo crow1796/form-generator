@@ -16,7 +16,7 @@
 			#no split; get property
 			obj[prop]
 		convertSource: (source) ->
-			source
+
 
 	on
 )(window, document, window.jQuery, window.angular)

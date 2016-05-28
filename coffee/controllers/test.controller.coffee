@@ -2,11 +2,10 @@
 	class TestController
 		constructor: ->
 			@template = [
-				['First Name|first_name|text:value|[@attribute:value]'],
-				['test|test|test'],
-				['test|test|test'],
-				['test|test|test'],
-				['test|test|test']
+					['First Name|first_name|text:value|[@attribute:value]'],
+					['Middle Name|middle_name|text:value|[@attribute:value]'],
+					['Last Name|last_name|text:value|[@attribute:value]'],
+					['NickName|nickname_name|text:value|[@attribute:value]']
 				];
 			@load
 		load: ->

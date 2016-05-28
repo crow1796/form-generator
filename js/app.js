@@ -37,7 +37,7 @@
     var TestController;
     TestController = (function() {
       function TestController() {
-        this.template = [['First Name|first_name|text:value|[@attribute:value]'], ['test|test|test'], ['test|test|test'], ['test|test|test'], ['test|test|test']];
+        this.template = [['First Name|first_name|text:value|[@attribute:value]'], ['Middle Name|middle_name|text:value|[@attribute:value]'], ['Last Name|last_name|text:value|[@attribute:value]'], ['NickName|nickname_name|text:value|[@attribute:value]']];
         this.load;
       }
 
@@ -60,19 +60,22 @@
 (function() {
   (function(window, document, $, angular) {
     var FormGenerator;
-    FormGenerator = function() {
+    FormGenerator = function($timeout) {
       this.restrict = 'E';
       this.templateUrl = 'coffee/templates/form-generator.html';
       this.controller = 'formGeneratorController';
+      this.controllerAs = 'formGeneratorVm';
       this.generatorHelper = new window.App.Helpers.Generator();
+      this.scope = {
+        src: '='
+      };
       this.link = function(scope, element, attrs) {
-        var source;
-        source = this.generatorHelper.getSourceFrom(scope, attrs.src);
+        console.log(scope.src);
         return true;
       };
       return this;
     };
-    angular.module('form-generator').directive('formGenerator', [FormGenerator]);
+    angular.module('form-generator').directive('formGenerator', ['$timeout', FormGenerator]);
     return true;
   })(window, document, window.jQuery, window.angular);
 
@@ -99,9 +102,7 @@
         return obj[prop];
       };
 
-      Generator.prototype.convertSource = function(source) {
-        return source;
-      };
+      Generator.prototype.convertSource = function(source) {};
 
       return Generator;
 
