@@ -5,6 +5,7 @@
 
 		generator.restrict = 'E'
 		generator.templateUrl = 'coffee/templates/form-generator.html'
+		generator.controller = 'formGeneratorController'
 
 		generator
 

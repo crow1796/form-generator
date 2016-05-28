@@ -8,6 +8,6 @@
 			on
 
 	angular.module 'form-generator'
-			.controller [FormGeneratorController]
+			.controller 'formGeneratorController', [FormGeneratorController]
 	on
 )(window, document, window.jQuery, window.angular)
