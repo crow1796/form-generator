@@ -4,6 +4,7 @@ var gulp = require('gulp'),
 	concat = require('gulp-concat'),
 	del = require('del'),
 	clean = require('gulp-clean'),
+	plumber = require('gulp-plumber'),
 	coffee = require('gulp-coffee');
 
 gulp.task('coffee', function(){
@@ -12,11 +13,10 @@ gulp.task('coffee', function(){
 				'./coffee/*.coffee',
 				'./coffee/**/*.coffee'
 				])
-			  .pipe(coffee())
-			  .on('error', function(error){
-			  	console.log(error);
-			  });
+				.pipe(plumber())
+				.pipe(coffee());
 	merge2([coffeeScript, js])
+		.pipe(plumber())
 		.pipe(concat('./js/app.js'))
 		.pipe(gulp.dest('./'));
 });

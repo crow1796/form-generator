@@ -1,13 +1,14 @@
 ((window, document, $, angular) ->
 	class FormGeneratorController
-		constructor: ->
-			@load
+		constructor: (@formTemplateService) ->
+			@template = @formTemplateService.convertSource(@src)
+			@load()
 		load: ->
 			$ ->
 				on
 			on
 
 	angular.module 'form-generator'
-			.controller 'formGeneratorController', [FormGeneratorController]
+			.controller 'formGeneratorController', ['formTemplateService', FormGeneratorController]
 	on
 )(window, document, window.jQuery, window.angular)

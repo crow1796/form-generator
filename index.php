@@ -10,7 +10,9 @@
 	<body>
 		<div class="form-generator-container" ng-controller="testController as testVm">
 			<form-generator 
-				src="testVm.template">
+				src="testVm.template"
+				template-model="testVm.templateModel"
+				submit="testVm.processForm">
 			</form-generator>
 		</div>
 	</body>

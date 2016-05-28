@@ -5,14 +5,28 @@
 		@templateUrl = 'coffee/templates/form-generator.html'
 		@controller = 'formGeneratorController'
 		@controllerAs = 'formGeneratorVm'
-		@generatorHelper = new window.App.Helpers.Generator()
+		@bindToController = true
 		@scope = {
-			src: '='
+			src: '=',
+			templateModel: '=',
+			submit: '='
 		}
 		
 		@link = (scope, element, attrs) ->
-			console.log scope.src
 			on
+
+		@fetchFromObject = (obj, prop) ->
+			#property not found
+			if typeof obj is 'undefined'
+				return false
+			#index of next property split
+			_index = prop.indexOf('.')
+			#property split found; recursive call
+			if _index > -1
+				#get object at property (before split), pass on remainder
+				return @fetchFromObject(obj[prop.substring(0, _index)], prop.substr(_index+1))
+			#no split; get property
+			obj[prop]
 		@
 
 	angular.module 'form-generator'
