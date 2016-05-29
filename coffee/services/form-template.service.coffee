@@ -4,19 +4,23 @@
 			@template = []
 			@tmpControl = {}
 			@singleTabTemplate = []
-		convertSource: (src) ->
+			@formType = ''
+		convertSource: (src, @templateValues) ->
 			#Create tabbed form
 			if src[0] instanceof Array
 				# If src is 2-dimensional arrays
 				# then it's a tabbed form
+				@formType = 'tabbed'
 				@extractTabbedForm(src)
-				return @template
+				return @
 			# Else it's a single form
-			@template
+			@formType = 'single'
+			@extractSingleForm(src)
+			@
 		extractTabbedForm: (src) ->
 			# Walk through steps/tabs
 			src.map(@walkTabs)
-			on
+			return
 		walkTabs: (formControls) =>
 			# walk through steps'/tabs' controls
 			formControls.map(@extractFormControl)
@@ -24,7 +28,7 @@
 			@template.push(@singleTabTemplate)
 			# Reset singletab template
 			@singleTabTemplate = []
-			on
+			return
 		extractFormControl: (singleControl) =>
 			# Split Controls' values
 			splitControl = singleControl.split('|')
@@ -34,44 +38,66 @@
 			@singleTabTemplate.push(@tmpControl)
 			# Reset tmpControl
 			@tmpControl = {}
-			on
+			return
 		checkControl: (control) ->
+			# Reset tmpControl props
+			@resetTmpControl
 			# If item on index 0 has '%' as first character
-			# Then it's a plain text
+			# Then it's a plain text or legend
 			if control[0].indexOf('%') is 0
-				@tmpControl['type'] = 'plain_text'
+				@tmpControl['type'] = 'legend'
 				@tmpControl['label'] = control[0].substring(1)
+				# Set Control's attributes
+				@checkAndSetAttributesFor(control[1], 'attributes')
 				return off
 			# Else it's an actual control
 			@tmpControl['label'] = control[0]
 			@tmpControl['model'] = control[1]
+			@tmpControl['type'] = control[2]
 
-			# If column has ':'
-			# then it has default value
-			if control[2].indexOf(':') > -1
-				typeValue = control[2].split(':')
-				@tmpControl['type'] = typeValue[0]
-				@tmpControl['value'] = typeValue[1]
+			if @tmpControl['type'] is 'repeater'
+				@tmpControl['count'] = 1
 
-			# If column is 'undefined'
-			# Then, set attributes
-			if control[3] isnt 'undefined'
-				@tmpControl['attributes'] = {}
-				# Remove first '@'
-				attributes = control[3].substring(1, (control[3].length - 1))
-				# Split attributes by '@'
-				splitAttributes = attributes.split('@')
-				splitAttributes.map(@setAttributes)
-			on
-		setAttributes: (value) =>
-			# Split attributes name and value by ':'
-			attributeValue = value.split(':')
-			@tmpControl['attributes'][attributeValue[0]] = attributeValue[1]
+			# Set control's attributes
+			@checkAndSetAttributesFor(control[3], 'attributes')
+			@checkAndSetAttributesFor(control[4], 'container_attributes')
+			return
+		setAttributes: (property) ->
+			(value) =>
+				# Split attributes name and value by ':'
+				attributeValue = value.split(':')
+				@tmpControl[property][attributeValue[0]] = attributeValue[1]
+				return
 
 		extractSingleForm: (src) ->
-			on
+			@walkTabs(src)
+			@
+
+		checkAndSetAttributesFor: (control, property) ->
+			if control isnt undefined
+				@tmpControl[property] = {}
+				# Remove first '@'
+				attributes = control.substring(1, (control.length - 1))
+				# Split attributes by '@'
+				splitAttributes = attributes.split('@')
+				splitAttributes.map(@setAttributes(property))
+			return
+
+		resetTmpControl: ->
+			@tmpControl['type'] = ''
+			@tmpControl['label'] = ''
+			@tmpControl['attributes'] = ''
+			@tmpControl['container_attributes'] = ''
+			@tmpControl['count'] = ''
+			return
+
+		getTemplate: ->
+			@template
+
+		getFormType: ->
+			@formType
 
 	angular.module 'form-generator'
 			.service 'formTemplateService', [FormTemplateService]
-	on
+	return
 )(window, document, $, angular)

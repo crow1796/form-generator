@@ -1,27 +1,144 @@
 ((window, document, $, angular) ->
 	class TestController
 		constructor: ->
+			#Label | model/name/id | element's attributes | parent's attributes
+			@templateModel = {}
 			@template = [
 					[
-						'First Name|first_name|text:value|[class:form-control class2]',
-						'School|school|text:value|[class:form-control@ng-click:testVm.method()]'
+						'First Name|first_name|text|[class:form-control class2]|[class:form-group]',
+						'School|school|text|[class:form-control@click:testVm.handleClick@change:testVm.handleChange]|[class:form-group]',
+						'Profile Picture|profile_picture|file|[class:form-control]|[class:form-group]',
+						'Multiple files|multiple_files|files|[class:form-control]|[class:form-group]',
+						'Describe yourself|description|textarea|[class:form-control]|[class:form-group]',
+						'Age|age|number|[class:form-control]|[class:form-group]'
 					],
 					[
 						'%Optional|[class:legend]',
-						'Middle Name|middle_name|text:value|[class:form-control]'
+						'Middle Name|middle_name|text|[class:form-control]|[class:form-group]',
+						'Click Me!|click_me|button|[class:btn btn-md btn-primary@click:testVm.handleClick]|[class:form-group]'
 					],
 					[
-						'Last Name|last_name|text:value|[class:form-control]'
+						'Last Name|last_name|text|[class:form-control]|[class:form-group]',
+						'%Birthday|[class:legend]',
+						'Month|month|select|[class:form-control]|[class:form-group]',
+						'Day|day|select|[class:form-control]|[class:form-group]',
+						'Year|year|select|[class:form-control]|[class:form-group]',
 					],
 					[
-						'NickName|nickname_name|text:value|[class:form-control]'
+						'NickName|nickname_name|text|[class:form-control]|[class:form-group]',
+						'Choice|choice|radio&other|[class:form-radio]|[class:form-group]',
+						'Gender|gender|radio|[class:form-radio]|[class:form-group]',
+						'Hobbies|hobbies|checkbox|[class:form-checkbox]|[class:form-group]'
+					],
+					[
+						'Repeater|repeater|repeater|[class:form-control]|[class:form-group]',
 					]
-				];
-			@templateModel = {}
+			]
+			@templateValues = {
+				'month': [
+					{ 
+						'value': 1,
+						'label': 'January'
+				 	},
+			 		{ 
+			 			'value': 2,
+			 			'label': 'February'
+			 	 	}
+				],
+				'day': [
+					{
+						'value': 1,
+						'label': 'One'
+					},
+					{
+						'value': 2,
+						'label': 'Two'
+					}
+				],
+				'year': [
+					{
+						'value': 1996,
+						'label': '1996'
+					},
+					{
+						'value': 1997,
+						'label': '1997'
+					}
+				],
+				'choice': [
+					{
+						'value': 1,
+						'label': 'Lorem'
+					},
+					{
+						'value': 2,
+						'label': 'Ipsum'
+					},
+					{
+						'value': 3,
+						'label': 'Dolor'
+					}
+				],
+				'hobbies': [
+					{
+						'value': 'lorem_ipsum',
+						'label': 'Lorem Ipsum'
+					},
+					{
+						'value': 'dolor_sit',
+						'label': 'Dolor sit'
+					},
+					{
+						'value': 'amet_consecteutor',
+						'label': 'Amet Consecteutor'
+					}
+				],
+				'gender': [
+					{
+						'value': 'male',
+						'label': 'Male'
+					},
+					{
+						'value': 'female',
+						'label': 'Female'
+					}
+				],
+				'repeater': [
+					{
+						'label': 'Title',
+						'model': 'title',
+						'type': 'text',
+						'attributes': {
+							'class': 'form-control'
+						},
+						'container_attributes': {
+							'class': 'form-group'
+						}
+					},{
+						'label': 'Number',
+						'model': 'number',
+						'type': 'number',
+						'attributes': {
+							'class': 'form-control'
+						},
+						'container_attributes': {
+							'class': 'form-group'
+						}
+					}
+				]
+			}
 
-		processForm: (event) ->
+		processForm: (event) =>
 			event.preventDefault()
-			console.log 'asdsa'
+			console.log @templateModel
+
+		handleClick: ->
+			alert 'clicked'
+			on
+
+		handleChange: ->
+			alert 'changed'
+			on
 			
 	angular.module 'form-generator'
 			.controller 'testController', [TestController]

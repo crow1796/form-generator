@@ -9,11 +9,11 @@
 		@scope = {
 			src: '=',
 			templateModel: '=',
+			templateValues: '=',
 			submit: '='
 		}
-		
-		@link = (scope, element, attrs) ->
-			on
+
+		@link = (scope, element, attr) ->
 
 		@fetchFromObject = (obj, prop) ->
 			#property not found
@@ -32,5 +32,5 @@
 	angular.module 'form-generator'
 			.directive 'formGenerator', ['$timeout', FormGenerator]
 
-	on
+	return
 )(window, document, window.jQuery, window.angular)

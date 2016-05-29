@@ -13,7 +13,11 @@ gulp.task('coffee', function(){
 				'./coffee/*.coffee',
 				'./coffee/**/*.coffee'
 				])
-				.pipe(plumber())
+				.pipe(plumber({
+					errorHandler: function(err){
+						console.log(err)
+					}
+				}))
 				.pipe(coffee());
 	merge2([coffeeScript, js])
 		.pipe(plumber())
