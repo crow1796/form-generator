@@ -7,7 +7,7 @@
 		<form ng-submit="formGeneratorVm.submit($event)">
 			<!-- Tab buttons -->
 			<div class="form-nav text-center">
-				<ul class="nav nav-pills">
+				<ul class="nav nav-pills nav-justified">
 					<li ng-repeat="tab in formGeneratorVm.template"
 						ng-class="{ active : ($index + 1) == formGeneratorVm.currentTabIndex }">
 						<a data-toggle="pill" 
@@ -77,8 +77,11 @@
 						<!-- If type is radio&other -->
 						<div ng-if="formControl['type'] == 'radio&other'"
 								ng-class="formControl.container_attributes['class']">
+								<label>
+									{{ formControl['label'] }}
+								</label>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
-									for="{{ option['label'] }}" >
+									ng-class="formControl['attributes']['class']">
 								<input type="radio"
 										name="{{ option['label'] }}"
 										id="{{ option['label'] }}"
@@ -87,7 +90,8 @@
 								{{ option['label'] }}
 							</label>
 
-							<label for="{{ formControl['model'] }}_other">
+							<label for="{{ formControl['model'] }}_other"
+									ng-class="formControl['attributes']['class']">
 								<input type="radio"
 										name="{{ formControl['model'] }}_other"
 										id="{{ formControl['model'] }}_other"
@@ -105,17 +109,16 @@
 						<!-- If type is checkbox -->
 						<div ng-if="formControl['type'] == 'checkbox'"
 								ng-class="formControl.container_attributes['class']">
-							<div>
+							<label>
 								{{ formControl['label'] }}
-							</div>
+							</label>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
-									for="{{ option['label'] }}" >
+										ng-class="formControl['attributes']['class']">
 								<input type="{{formControl['type']}}"
 										name="{{ option['label'] }}"
 										id="{{ option['label'] }}"
 										ng-model="formGeneratorVm.templateModel[formControl['model']][option['value']]"
 										value="{{ option['value'] }}"
-										ng-class="formControl['attributes']['class']"
 										control-attribute-manager="{{formControl['attributes']}}">
 								{{ option['label'] }}
 							</label>
@@ -124,17 +127,16 @@
 						<!-- If type is radio -->
 						<div ng-if="formControl['type'] == 'radio'"
 								ng-class="formControl.container_attributes['class']">
-							<div>
+							<label>
 								{{ formControl['label'] }}
-							</div>
+							</label>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
-									for="{{ option['label'] }}" >
+										ng-class="formControl['attributes']['class']">
 								<input type="{{formControl['type']}}"
 										name="{{ formControl['model'] }}"
 										id="{{ option['label'] }}"
 										ng-model="formGeneratorVm.templateModel[formControl['model']]"
 										value="{{ option['value'] }}"
-										ng-class="formControl['attributes']['class']"
 										control-attribute-manager="{{formControl['attributes']}}">
 								{{ option['label'] }}
 							</label>
@@ -202,7 +204,7 @@
 							<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 								ng-class="formControl.container_attributes['class']">
 								<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]" 
-									class="col-sm-{{ 12 / formGeneratorVm.templateValues[formControl['model']].length }}">
+									class="col-sm-{{ (12 / formGeneratorVm.templateValues[formControl['model']].length) | number:0 }}">
 									<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
 										<label for="{{column['model']}}">
 											{{ count + 1 }} . {{ column['label'] }}
