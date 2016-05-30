@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="form-generator">
+<html lang="en" ng-app="app">
 	<head>
 		<meta charset="UTF-8">
 		<title>Document</title>
@@ -9,6 +9,7 @@
 		<script src="bower_components/angular/angular.js" type="text/javascript"></script>
 		<script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
 		<script src="js/app.js" type="text/javascript"></script>
+		<script src="js/main.js" type="text/javascript"></script>
 	</head>
 	<body>
 		<div class="form-generator-container" ng-controller="testController as testVm">

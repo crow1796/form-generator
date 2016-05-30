@@ -18,7 +18,7 @@ gulp.task('coffee', function(){
 						console.log(err)
 					}
 				}))
-				.pipe(coffee());
+				.pipe(coffee({bare: true}));
 	merge2([coffeeScript, js])
 		.pipe(plumber())
 		.pipe(concat('./js/app.js'))

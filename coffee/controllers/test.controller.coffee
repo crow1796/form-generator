@@ -124,6 +124,28 @@
 						'container_attributes': {
 							'class': 'form-group'
 						}
+					},
+					{
+						'label': 'Another Text',
+						'model': 'another_text',
+						'type': 'text',
+						'attributes': {
+							'class': 'form-control'
+						},
+						'container_attributes': {
+							'class': 'form-group'
+						}
+					},
+					{
+						'label': 'Multiline Text',
+						'model': 'multi_line',
+						'type': 'textarea',
+						'attributes': {
+							'class': 'form-control'
+						},
+						'container_attributes': {
+							'class': 'form-group'
+						}
 					}
 				]
 			}

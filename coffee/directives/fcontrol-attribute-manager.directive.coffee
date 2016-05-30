@@ -1,26 +1,25 @@
 ((window, document, $, angular) ->
-
 	ControlAttributeManager = ($parse) ->
 		@restrict = 'A'
 		@controller = 'controlAttributeController'
 		@controllerAs = 'controlAttributeVm'
 		@bindToController = true
 		@scope = {
-			controlAttrs: '='
+			controlAttributeManager: '='
 		}
 
 		@compile = (element, attrs) ->
 			return {
 				post: (scope, element, attrs) ->
-					return if attrs.controlAttrs is undefined
-					controlAttrs = JSON.parse(attrs.controlAttrs)
-					delete controlAttrs['class']
-					attributeNames = Object.keys(controlAttrs)
+					console.log attrs.controlAttributeManager
+					return if attrs.controlAttributeManager is undefined
+					controlAttributeManager = JSON.parse(attrs.controlAttributeManager)
+					delete controlAttributeManager['class']
+					attributeNames = Object.keys(controlAttributeManager)
 					for i in [0...attributeNames.length]
-						element.bind attributeNames[i], controlAttrs[attributeNames[i]]
+						element.bind attributeNames[i], controlAttributeManager[attributeNames[i]]
 					return
 			}
-
 		
 		@
 

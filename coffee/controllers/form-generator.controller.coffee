@@ -28,6 +28,19 @@
 			for i in [min...max]
 				input.push(i)
 			input
+		repeaterRemoveItem: (model, formControl) ->
+			if formControl['count'] > 1
+				formControl['count'] = formControl['count'] - 1
+			return if @templateModel[model] is undefined
+			keys = Object.keys(@templateModel[model])
+			for keyCounter in [0...keys.length]
+				if Object.keys(@templateModel[model][keys[keyCounter]]).length >= formControl['count']
+					delete @templateModel[model][keys[keyCounter]][formControl['count']]
+			return
+		repeaterAddItem: (model, formControl) ->
+			formControl['count'] = formControl['count'] + 1
+			return
+
 
 	angular.module 'form-generator'
 			.controller 'formGeneratorController', ['formTemplateService', FormGeneratorController]

@@ -1,10 +1,9 @@
 ((window, document, $, angular) ->
-
     FormFileReader = ($q) ->
         slice = Array.prototype.slice
         @restrict = 'A'
         @require = '?ngModel'
-        @compile = (element, scope) ->
+        @compile = (element, attrs) ->
             return {
                 pre: (scope, element, attrs, ngModel) ->
                     return if !ngModel or attrs['type'] isnt 'file'
