@@ -4,10 +4,10 @@
 			@load()
 		load: ->
 			$ ->
-				on
-			on
+				return
+			return
 
 	angular.module 'form-generator'
 			.controller 'controlAttributeController', [ControlAttributeController]
-	on
-)(window, document, $, angular)
+	return
+)(window, document, window.jQuery, window.angular)

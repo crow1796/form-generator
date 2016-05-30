@@ -1,8 +1,5 @@
 (function(window, document, $, angular) {
-  window.App = {};
-  window.App.Helpers = {};
   angular.module('form-generator', []);
-  return true;
 })(window, document, window.jQuery, window.angular);
 
 (function(window, document, $, angular) {
@@ -13,18 +10,14 @@
     }
 
     ControlAttributeController.prototype.load = function() {
-      $(function() {
-        return true;
-      });
-      return true;
+      $(function() {});
     };
 
     return ControlAttributeController;
 
   })();
   angular.module('form-generator').controller('controlAttributeController', [ControlAttributeController]);
-  return true;
-})(window, document, $, angular);
+})(window, document, window.jQuery, window.angular);
 
 (function(window, document, $, angular) {
   var FormGeneratorController;
