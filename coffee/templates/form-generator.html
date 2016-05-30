@@ -35,7 +35,7 @@
 						</div><!-- /If type is legend -->
 
 						<!-- If type is text -->
-						<div ng-if="formControl['type'] == 'text' || formControl['type'] == 'number'" ng-class="formControl.container_attributes['class']">
+						<div ng-if="formControl['type'] == 'text' || formControl['type'] == 'number' || formControl['type'] == 'email' || formControl['type'] == 'date'" ng-class="formControl.container_attributes['class']">
 							<label for="{{formControl['model']}}">
 								{{ formControl['label'] }}
 							</label>
@@ -105,6 +105,9 @@
 						<!-- If type is checkbox -->
 						<div ng-if="formControl['type'] == 'checkbox'"
 								ng-class="formControl.container_attributes['class']">
+							<div>
+								{{ formControl['label'] }}
+							</div>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 									for="{{ option['label'] }}" >
 								<input type="{{formControl['type']}}"
@@ -121,6 +124,9 @@
 						<!-- If type is radio -->
 						<div ng-if="formControl['type'] == 'radio'"
 								ng-class="formControl.container_attributes['class']">
+							<div>
+								{{ formControl['label'] }}
+							</div>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 									for="{{ option['label'] }}" >
 								<input type="{{formControl['type']}}"
@@ -197,7 +203,7 @@
 								ng-class="formControl.container_attributes['class']">
 								<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]" 
 									class="col-sm-{{ 12 / formGeneratorVm.templateValues[formControl['model']].length }}">
-									<div ng-if="column['type'] == 'text' || column['type'] == 'number'">
+									<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
 										<label for="{{column['model']}}">
 											{{ count + 1 }} . {{ column['label'] }}
 										</label>
