@@ -29,9 +29,15 @@
 				input.push(i)
 			input
 		repeaterRemoveItem: (model, formControl) ->
+			if @templateModel[model] isnt undefined
+				if formControl['count'] is 1
+					@templateModel[model] = {}
+					
 			if formControl['count'] > 1
 				formControl['count'] = formControl['count'] - 1
+
 			return if @templateModel[model] is undefined
+
 			keys = Object.keys(@templateModel[model])
 			for keyCounter in [0...keys.length]
 				if Object.keys(@templateModel[model][keys[keyCounter]]).length >= formControl['count']
@@ -39,6 +45,19 @@
 			return
 		repeaterAddItem: (model, formControl) ->
 			formControl['count'] = formControl['count'] + 1
+			return
+		setOtherRadio: (model) ->
+			if @templateModel[model] is undefined
+				@templateModel[model] = {}
+			@templateModel[model]['index'] = "#{model}_other"
+			return
+		clearOtherInput: (model) ->
+			console.log model
+			if @templateModel[model] is undefined
+				@templateModel[model] = {}
+
+			if @templateModel[model]['other_value'] isnt undefined
+				delete @templateModel[model]['other_value']
 			return
 
 

@@ -13,14 +13,18 @@
 	</head>
 	<body>
 		<div class="form-generator-container" ng-controller="testController as testVm">
-			<form-generator 
-				src="testVm.template"
-				template-model="testVm.templateModel"
-				template-values="testVm.templateValues"
-				submit="testVm.processForm">
-			</form-generator>
+			<div class="row">
+				<div class="col-sm-6 col-sm-offset-3">
+					<form-generator 
+						src="testVm.template"
+						template-model="testVm.templateModel"
+						template-values="testVm.templateValues"
+						submit="testVm.processForm">
+					</form-generator>
+				</div>
+			</div>
 			<pre>
-				{{ testVm.templateModel | json }}
+				<!-- {{ testVm.templateModel | json }} -->
 			</pre>
 		</div>
 	</body>

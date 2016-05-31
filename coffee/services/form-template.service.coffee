@@ -25,6 +25,7 @@
 			# walk through steps'/tabs' controls
 			formControls.map(@extractFormControl)
 			# Push single tab template to actual template
+			return if @formType is 'single'
 			@template.push(@singleTabTemplate)
 			# Reset singletab template
 			@singleTabTemplate = []
@@ -92,6 +93,7 @@
 			return
 
 		getTemplate: ->
+			return @singleTabTemplate if @formType is 'single'
 			@template
 
 		getFormType: ->

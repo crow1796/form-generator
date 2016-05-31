@@ -64,6 +64,11 @@
 
     FormGeneratorController.prototype.repeaterRemoveItem = function(model, formControl) {
       var j, keyCounter, keys, ref;
+      if (this.templateModel[model] !== void 0) {
+        if (formControl['count'] === 1) {
+          this.templateModel[model] = {};
+        }
+      }
       if (formControl['count'] > 1) {
         formControl['count'] = formControl['count'] - 1;
       }
@@ -80,6 +85,23 @@
 
     FormGeneratorController.prototype.repeaterAddItem = function(model, formControl) {
       formControl['count'] = formControl['count'] + 1;
+    };
+
+    FormGeneratorController.prototype.setOtherRadio = function(model) {
+      if (this.templateModel[model] === void 0) {
+        this.templateModel[model] = {};
+      }
+      this.templateModel[model]['index'] = model + "_other";
+    };
+
+    FormGeneratorController.prototype.clearOtherInput = function(model) {
+      console.log(model);
+      if (this.templateModel[model] === void 0) {
+        this.templateModel[model] = {};
+      }
+      if (this.templateModel[model]['other_value'] !== void 0) {
+        delete this.templateModel[model]['other_value'];
+      }
     };
 
     return FormGeneratorController;
@@ -237,6 +259,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
     FormTemplateService.prototype.walkTabs = function(formControls) {
       formControls.map(this.extractFormControl);
+      if (this.formType === 'single') {
+        return;
+      }
       this.template.push(this.singleTabTemplate);
       this.singleTabTemplate = [];
     };
@@ -301,6 +326,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     FormTemplateService.prototype.getTemplate = function() {
+      if (this.formType === 'single') {
+        return this.singleTabTemplate;
+      }
       return this.template;
     };
 
