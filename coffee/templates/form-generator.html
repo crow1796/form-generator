@@ -61,7 +61,7 @@
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
 									ng-class="formControl['attributes']['class']"
 									placeholder="{{ formControl['label'] }}"
-									control-attribute-manager="{{formControl['attributes']}}">
+									control-attributes>
 						</div><!-- /If type is text -->
 
 						<!-- If type is select -->
@@ -74,8 +74,7 @@
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
 									ng-class="formControl['attributes']['class']"
 									placeholder="{{ formControl['label'] }}"
-									ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[formControl['model']]"
-									control-attribute-manager="{{formControl['attributes']}}">
+									ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[formControl['model']]" >
 							</select>
 						</div><!-- /If type is select -->
 
@@ -85,8 +84,7 @@
 									id="{{formControl['model']}}"
 									ng-class="formControl['attributes']['class']"
 									ng-bind="formControl['label']"
-									type="{{ formControl['type'] }}"
-									control-attribute-manager="{{formControl['attributes']}}">
+									type="{{ formControl['type'] }}" >
 							</button>
 						</div><!-- /If type is button -->
 
@@ -99,8 +97,8 @@
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 									ng-class="formControl['attributes']['class']">
 								<input type="radio"
-										name="{{ option['label'] }}"
-										id="{{ option['label'] }}"
+										name="{{ formControl['model'] + '_' + $index }}"
+										id="{{ formControl['model'] + '_' + $index }}"
 										ng-model="formGeneratorVm.templateModel[formControl['model']]['index']"
 										value="{{ option['value'] }}"
 										ng-change="formGeneratorVm.clearOtherInput(formControl['model'])">
@@ -134,11 +132,11 @@
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 										ng-class="formControl['attributes']['class']">
 								<input type="{{formControl['type']}}"
-										name="{{ option['label'] }}"
-										id="{{ option['label'] }}"
+										name="{{ formControl['model'] + '_' + $index }}"
+										id="{{ formControl['model'] + '_' + $index }}"
 										ng-model="formGeneratorVm.templateModel[formControl['model']][option['value']]"
 										value="{{ option['value'] }}"
-										control-attribute-manager="{{formControl['attributes']}}">
+ >
 								{{ option['label'] }}
 							</label>
 						</div> <!-- /If tpye is checkbox -->
@@ -152,11 +150,11 @@
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 										ng-class="formControl['attributes']['class']">
 								<input type="{{formControl['type']}}"
-										name="{{ formControl['model'] }}"
-										id="{{ option['label'] }}"
+										name="{{ formControl['model'] + '_' + $index }}"
+										id="{{ formControl['model'] + '_' + $index }}"
 										ng-model="formGeneratorVm.templateModel[formControl['model']]"
 										value="{{ option['value'] }}"
-										control-attribute-manager="{{formControl['attributes']}}">
+ >
 								{{ option['label'] }}
 							</label>
 						</div> <!-- /If tpye is radio -->
@@ -171,8 +169,7 @@
 							<input type="{{ formControl['type'] }}" 
 									name="{{ formControl['model'] }}"
 									id="{{ formControl['model'] }}"
-									ng-model="formGeneratorVm.templateModel[formControl['model']]"
-									ng-class="formControl['attributes']['class']"
+									ng-model="formGeneratorVm.templateModel[formControl['model']]" ng-class="formControl['attributes']['class']"
 									form-filereader>
 						</div> <!-- /If type is file -->
 
@@ -192,6 +189,26 @@
 									form-filereader>
 						</div> <!-- /If type is files (multiple files) -->
 
+						<!-- If type is file with preview -->
+						<div ng-if="formControl['type'] == 'file&preview'"
+								ng-class="formControl.container_attributes['class']">
+
+							<label for="{{ formControl['model'] }}">
+								{{ formControl['label'] }}
+							</label>
+							<input type="file" 
+									name="{{ formControl['model'] }}"
+									id="{{ formControl['model'] }}"
+									ng-model="formGeneratorVm.templateModel[formControl['model']]"
+									ng-class="formControl['attributes']['class']"
+									form-filereader>
+							<div class="file-preview-container" ng-if="formGeneratorVm.templateModel[formControl['model']]">
+								<div class="file-preview">
+									<img ng-src="{{formGeneratorVm.templateModel[formControl['model']]}}">
+								</div>
+							</div>
+						</div> <!-- /If type is file with preview -->
+
 						<!-- If type is textarea -->
 						<div ng-if="formControl['type'] == 'textarea'"
 								ng-class="formControl.container_attributes['class']">
@@ -202,7 +219,7 @@
 								id="{{ formControl['model'] }}" 
 								ng-class="formControl['attributes']['class']"
 								ng-model="formGeneratorVm.templateModel[formControl['model']]"
-								control-attribute-manager="{{formControl['attributes']}}"
+								 
 								cols="30" 
 								rows="10"
 								placeholder="{{ column['label'] }}">
@@ -236,8 +253,7 @@
 												id="{{ [column['model']][count] }}"
 												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
 												ng-class="column['attributes']['class']"
-												placeholder="{{ column['label'] }}"
-												control-attribute-manager="{{column['attributes']}}">
+												placeholder="{{ column['label'] }}" control-attributes>
 									</div><!-- If type is text -->
 
 									<!-- If type is textarea -->
@@ -249,8 +265,7 @@
 										<textarea name="{{ column['model'] }}" 
 											id="{{ column['model'] }}" 
 											ng-class="column['attributes']['class']"
-											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
-											control-attribute-manager="{{column['attributes']}}"
+											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" control-attributes
 											cols="30"
 											placeholder="{{ column['label'] }}"
 											rows="4">
@@ -294,7 +309,7 @@
 						ng-model="formGeneratorVm.templateModel[formControl['model']]"
 						ng-class="formControl['attributes']['class']"
 						placeholder="{{ formControl['label'] }}"
-						control-attribute-manager="{{formControl['attributes']}}">
+						 >
 			</div><!-- /If type is text -->
 
 			<!-- If type is select -->
@@ -308,7 +323,7 @@
 						ng-class="formControl['attributes']['class']"
 						placeholder="{{ formControl['label'] }}"
 						ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[formControl['model']]"
-						control-attribute-manager="{{formControl['attributes']}}">
+						 >
 				</select>
 			</div><!-- /If type is select -->
 
@@ -319,7 +334,7 @@
 						ng-class="formControl['attributes']['class']"
 						ng-bind="formControl['label']"
 						type="{{ formControl['type'] }}"
-						control-attribute-manager="{{formControl['attributes']}}">
+						 >
 				</button>
 			</div><!-- /If type is button -->
 
@@ -371,7 +386,7 @@
 							id="{{ option['label'] }}"
 							ng-model="formGeneratorVm.templateModel[formControl['model']][option['value']]"
 							value="{{ option['value'] }}"
-							control-attribute-manager="{{formControl['attributes']}}">
+							 >
 					{{ option['label'] }}
 				</label>
 			</div> <!-- /If tpye is checkbox -->
@@ -389,7 +404,7 @@
 							id="{{ option['label'] }}"
 							ng-model="formGeneratorVm.templateModel[formControl['model']]"
 							value="{{ option['value'] }}"
-							control-attribute-manager="{{formControl['attributes']}}">
+							 >
 					{{ option['label'] }}
 				</label>
 			</div> <!-- /If tpye is radio -->
@@ -455,7 +470,7 @@
 					id="{{ formControl['model'] }}" 
 					ng-class="formControl['attributes']['class']"
 					ng-model="formGeneratorVm.templateModel[formControl['model']]"
-					control-attribute-manager="{{formControl['attributes']}}"
+					 
 					cols="30" 
 					rows="10"
 					placeholder="{{ column['label'] }}">
@@ -489,8 +504,7 @@
 									id="{{ [column['model']][count] }}"
 									ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
 									ng-class="column['attributes']['class']"
-									placeholder="{{ column['label'] }}"
-									control-attribute-manager="{{column['attributes']}}">
+									placeholder="{{ column['label'] }}" control-attributes>
 						</div><!-- If type is text -->
 
 						<!-- If type is textarea -->
@@ -503,7 +517,7 @@
 								id="{{ column['model'] }}" 
 								ng-class="column['attributes']['class']"
 								ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
-								control-attribute-manager="{{column['attributes']}}"
+								 control-attributes
 								cols="30"
 								placeholder="{{ column['label'] }}"
 								rows="4">
