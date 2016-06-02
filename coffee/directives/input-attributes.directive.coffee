@@ -1,13 +1,14 @@
 ((window, document, $, angular) ->
 
 	class InputAttributes 
-		constructor: (@parse, @q) ->
+		constructor: (@parse, @q, @compile) ->
 			@slice = Array.prototype.slice
-		restrict: 'A'
-		require: '?ngModel'
-		scope: {
-			customAttributes: '=?'
-		}
+			@restrict = 'A'
+			@require = '?ngModel'
+			@scope = {
+				customAttributes: '=?',
+				validations: '=?'
+			}
 		link: (scope, element, attrs, ngModel) =>
 			if attrs['type'] isnt 'file'
 				@attributesManager(scope, element, attrs)
@@ -57,16 +58,19 @@
 				# Split Event listener
 				splitEvent = controlAttributes[attributeNames[i]].split('.')
 				# Bind event to element
-				element.bind attributeNames[i], scope.$parent.$parent.$parent.$parent.$parent[splitEvent[0]][splitEvent[1]]
+				element.bind attributeNames[i], scope.$parent.$parent.$parent.$parent.$parent.$parent[splitEvent[0]][splitEvent[1]]
 				# Remove binded event from controlAttributes
 				delete controlAttributes[attributeNames[i]]
 			# Get and assign other attributes
 			attributeNames = Object.keys(controlAttributes)
 			for i in [0...attributeNames.length]
-				attrs[element[attributeNames[i]]] = controlAttributes[attributeNames[i]]
+				element.attr attributeNames[i], controlAttributes[attributeNames[i]]
+				@compile(element)
 			return
+
+
 	angular.module 'form-generator'
-			.directive 'inputAttributes', ($parse, $q) ->
+			.directive 'inputAttributes', ($parse, $q, $compile) ->
 				new InputAttributes($parse, $q)
 
 	return

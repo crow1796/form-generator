@@ -5,14 +5,45 @@
     function TestController() {
       this.processForm = bind(this.processForm, this);
       this.templateModel = {};
-      // this.template = [['First Name|first_name|text|[class:form-control class2]|[class:form-group]', 'School|school|text|[class:form-control@click:testVm.handleClick@change:testVm.handleChange]|[class:form-group]', 'Profile Picture|profile_picture|file|[class:form-control]|[class:form-group]', 'Multiple files|multiple_files|files|[class:form-control]|[class:form-group]', 'Describe yourself|description|textarea|[class:form-control]|[class:form-group]', 'Age|age|number|[class:form-control]|[class:form-group]'], ['%Optional|[class:legend]', 'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 'Click Me!|click_me|button|[class:btn btn-md btn-primary@click:testVm.handleClick]|[class:form-group]'], ['Last Name|last_name|text|[class:form-control]|[class:form-group]', '%Birthday|[class:legend]', 'Month|month|select|[class:form-control]|[class:form-group]', 'Day|day|select|[class:form-control]|[class:form-group]', 'Year|year|select|[class:form-control]|[class:form-group]'], ['NickName|nickname_name|text|[class:form-control]|[class:form-group]', 'Choice|choice|radio&other|[class:form-radio]|[class:form-group]', 'Gender|gender|radio|[class:form-radio]|[class:form-group]', 'Hobbies|hobbies|checkbox|[class:form-checkbox]|[class:form-group]'], ['Repeater|repeater|repeater|[class:form-control]|[class:form-group]']];
       this.template = [
-      'First Name|first_name|text|[class:form-control]|[class:form-group]', 
-      'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 
-      'Last Name|last_name|text|[class:form-control]|[class:form-group]', 
-      'Profile Picture|profile_picture|file&preview|[class:form-control]|[class:form-group]', 
-      'Repeater|repeater|repeater|[class:form-repeater]|[class:form-group]', 
-      'Click ME!|click_me|button|[class:btn btn-default btn-md@click:testVm.handleClick@required:required]|[class:form-group]'];
+            [
+              'First Name|first_name|text|[class:form-control class2@required:required]|[class:form-group]', 
+              'Email Address|email|email|[class:form-control@required:required]|[class:form-group]',
+              'School|school|text|[class:form-control@click:testVm.handleClick@change:testVm.handleChange@required:required]|[class:form-group]', 
+              'Profile Picture|profile_picture|file|[class:form-control@required:required]|[class:form-group]', 
+              'Multiple files|multiple_files|files|[class:form-control@required:required]|[class:form-group]', 
+              'Describe yourself|description|textarea|[class:form-control@required:required]|[class:form-group]', 
+              'Age|age|number|[class:form-control]|[class:form-group@required:required]'
+            ], 
+            [
+              '%Optional|[class:legend]', 
+              'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 
+              'Click Me!|click_me|button|[class:btn btn-md btn-primary@click:testVm.handleClick]|[class:form-group]'
+            ], 
+            [
+              'Last Name|last_name|text|[class:form-control]|[class:form-group]', 
+              '%Birthday|[class:legend]', 
+              'Month|month|select|[class:form-control@ng-selected:1]|[class:form-group]', 
+              'Day|day|select|[class:form-control]|[class:form-group]', 
+              'Year|year|select|[class:form-control]|[class:form-group]'
+            ], 
+            [
+              'NickName|nickname_name|text|[class:form-control]|[class:form-group]', 
+              'Choice|choice|radio&other|[class:form-radio]|[class:form-group]', 
+              'Gender|gender|radio|[class:form-radio]|[class:form-group]', 
+              'Hobbies|hobbies|checkbox|[class:form-checkbox]|[class:form-group]'
+            ], 
+            [
+              'Repeater|repeater|repeater|[class:form-control]|[class:form-group]'
+            ]
+      ];
+      // this.template = [
+      // 'First Name|first_name|text|[class:form-control]|[class:form-group]', 
+      // 'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 
+      // 'Last Name|last_name|text|[class:form-control]|[class:form-group]', 
+      // 'Profile Picture|profile_picture|file&preview|[class:form-control]|[class:form-group]', 
+      // 'Repeater|repeater|repeater|[class:form-repeater]|[class:form-group]', 
+      // 'Click ME!|click_me|button|[class:btn btn-default btn-md]|[class:form-group]'];
       this.templateValues = {
         'month': [
           {
@@ -122,7 +153,7 @@
 
     TestController.prototype.processForm = function(event) {
       event.preventDefault();
-      return console.log(this.templateModel);
+      console.log(this.templateModel);
     };
 
     TestController.prototype.handleClick = function() {

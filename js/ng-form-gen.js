@@ -4,25 +4,20 @@
 
 (function(window, document, $, angular) {
   var FormGenerator;
-  FormGenerator = (function() {
-    function FormGenerator(timeout) {
-      this.timeout = timeout;
-      this.controller = 'formGeneratorController';
-      this.controllerAs = 'formGeneratorVm';
-      this.restrict = 'E';
-      this.bindToController = true;
-      this.scope = {
-        src: '=',
-        templateModel: '=',
-        templateValues: '=',
-        submit: '='
-      };
-      this.templateUrl = 'coffee/templates/form-generator.html';
-    }
-
-    FormGenerator.prototype.link = function(scope, element, attrs) {};
-
-    FormGenerator.prototype.fetchFromObject = function(obj, prop) {
+  FormGenerator = function($timeout) {
+    this.restrict = 'E';
+    this.templateUrl = 'http://webprojectupdates.com/asianbusinessbrokers/wp-content/themes/asianbusinessbrokers/js/templates/form-generator.html';
+    this.controller = 'formGeneratorController';
+    this.controllerAs = 'formGeneratorVm';
+    this.bindToController = true;
+    this.scope = {
+      src: '=',
+      templateModel: '=',
+      templateValues: '=',
+      submit: '='
+    };
+    this.link = function(scope, element, attr) {};
+    this.fetchFromObject = function(obj, prop) {
       var _index;
       if (typeof obj === 'undefined') {
         return false;
@@ -33,13 +28,9 @@
       }
       return obj[prop];
     };
-
-    return FormGenerator;
-
-  })();
-  angular.module('form-generator').directive('formGenerator', function($timeout) {
-    return new FormGenerator($timeout);
-  });
+    return this;
+  };
+  angular.module('form-generator').directive('formGenerator', ['$timeout', FormGenerator]);
 })(window, document, window.jQuery, window.angular);
 
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -47,21 +38,22 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 (function(window, document, $, angular) {
   var InputAttributes;
   InputAttributes = (function() {
-    function InputAttributes(parse, q, compile) {
+    function InputAttributes(parse, q) {
       this.parse = parse;
       this.q = q;
-      this.compile = compile;
       this.attributesManager = bind(this.attributesManager, this);
       this.readFile = bind(this.readFile, this);
       this.link = bind(this.link, this);
       this.slice = Array.prototype.slice;
-      this.restrict = 'A';
-      this.require = '?ngModel';
-      this.scope = {
-        customAttributes: '=?',
-        validations: '=?'
-      };
     }
+
+    InputAttributes.prototype.restrict = 'A';
+
+    InputAttributes.prototype.require = '?ngModel';
+
+    InputAttributes.prototype.scope = {
+      customAttributes: '=?'
+    };
 
     InputAttributes.prototype.link = function(scope, element, attrs, ngModel) {
       if (attrs['type'] !== 'file') {
@@ -124,43 +116,20 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
           continue;
         }
         splitEvent = controlAttributes[attributeNames[i]].split('.');
-        element.bind(attributeNames[i], scope.$parent.$parent.$parent.$parent.$parent.$parent[splitEvent[0]][splitEvent[1]]);
+        element.bind(attributeNames[i], scope.$parent.$parent.$parent.$parent.$parent[splitEvent[0]][splitEvent[1]]);
         delete controlAttributes[attributeNames[i]];
       }
       attributeNames = Object.keys(controlAttributes);
       for (i = k = 0, ref1 = attributeNames.length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-        element.attr(attributeNames[i], controlAttributes[attributeNames[i]]);
-        this.compile(element);
+        attrs[element[attributeNames[i]]] = controlAttributes[attributeNames[i]];
       }
     };
 
     return InputAttributes;
 
   })();
-  angular.module('form-generator').directive('inputAttributes', function($parse, $q, $compile) {
+  angular.module('form-generator').directive('inputAttributes', function($parse, $q) {
     return new InputAttributes($parse, $q);
-  });
-})(window, document, window.jQuery, window.angular);
-
-(function(window, document, $, angular) {
-  var Validator;
-  Validator = (function() {
-    function Validator() {
-      this.restrict = 'A';
-      this.scope = {
-        displayErrors: '='
-      };
-    }
-
-    Validator.prototype.link = function(scope, element, attrs) {
-      console.log(scope.displayErrors);
-    };
-
-    return Validator;
-
-  })();
-  angular.module('form-generator').directive('validation', function() {
-    return new Validator();
   });
 })(window, document, window.jQuery, window.angular);
 
@@ -182,11 +151,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
     FormGeneratorController.prototype.handleOtherInput = function(model) {
       model = model + '_other';
-    };
-
-    FormGeneratorController.prototype.changeCurrentTabIndex = function(event, index) {
-      event.preventDefault();
-      this.currentTabIndex = index + 1;
+      console.log(model);
     };
 
     FormGeneratorController.prototype.next = function() {
@@ -251,8 +216,6 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         delete this.templateModel[model]['other_value'];
       }
     };
-
-    FormGeneratorController.prototype.validate = function() {};
 
     return FormGeneratorController;
 

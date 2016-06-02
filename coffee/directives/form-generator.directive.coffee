@@ -1,21 +1,21 @@
 ((window, document, $, angular) ->
 
-	FormGenerator = ($timeout) ->
-		@restrict = 'E'
-		@templateUrl = 'coffee/templates/form-generator.html'
-		@controller = 'formGeneratorController'
-		@controllerAs = 'formGeneratorVm'
-		@bindToController = true
-		@scope = {
-			src: '=',
-			templateModel: '=',
-			templateValues: '=',
-			submit: '='
-		}
+	class FormGenerator
+		constructor: (@timeout) ->
+			@controller = 'formGeneratorController'
+			@controllerAs = 'formGeneratorVm'
+			@restrict = 'E'
+			@bindToController = true
+			@scope = {
+				src: '=',
+				templateModel: '=',
+				templateValues: '=',
+				submit: '='
+			}
+			@templateUrl = 'coffee/templates/form-generator.html'
+		link: (scope, element, attrs) ->
 
-		@link = (scope, element, attr) ->
-
-		@fetchFromObject = (obj, prop) ->
+		fetchFromObject: (obj, prop) ->
 			#property not found
 			if typeof obj is 'undefined'
 				return false
@@ -27,10 +27,10 @@
 				return @fetchFromObject(obj[prop.substring(0, _index)], prop.substr(_index+1))
 			#no split; get property
 			obj[prop]
-		@
 
 	angular.module 'form-generator'
-			.directive 'formGenerator', ['$timeout', FormGenerator]
+			.directive 'formGenerator', ($timeout) ->
+				new FormGenerator($timeout)
 
 	return
 )(window, document, window.jQuery, window.angular)

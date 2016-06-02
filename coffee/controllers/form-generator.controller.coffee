@@ -12,9 +12,13 @@
 			return
 		handleOtherInput: (model) ->
 			model = model + '_other'
-			console.log model
+			return
+		changeCurrentTabIndex: (event, index) ->
+			event.preventDefault()
+			@currentTabIndex = (index + 1)
 			return
 		next: ->
+			# validate(@currentTabIndex)
 			if @currentTabIndex < @template.length
 				@currentTabIndex = @currentTabIndex + 1
 			return
@@ -52,12 +56,13 @@
 			@templateModel[model]['index'] = "#{model}_other"
 			return
 		clearOtherInput: (model) ->
-			console.log model
 			if @templateModel[model] is undefined
 				@templateModel[model] = {}
 
 			if @templateModel[model]['other_value'] isnt undefined
 				delete @templateModel[model]['other_value']
+			return
+		validate: ->
 			return
 
 
