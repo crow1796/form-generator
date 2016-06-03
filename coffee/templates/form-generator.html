@@ -1,17 +1,42 @@
 <style type="text/css">
+	.clear-both{
+		clear: both;
+	}
+
+	.file-preview-container{
+		clear: both;
+	}
+
 	.file-preview{
-		width: 33.3%;
-		height: 100px;
+		width: 30%;
+		height: auto;
 		background: black;
 		margin-top: 10px;
 		padding: 5px;
 		border-radius: 5px;
+		float: left;
+		margin: 5px;
 	}
 
 	.file-preview img{
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
+	}
+
+	.field-errors-container{
+		padding: 4px 4px 4px 25px;
+		color: red;
+		background: rgba(255, 0, 0, 0.05);
+	}
+
+	.field-errors-container p{
+		padding: 0;
+		margin: 0;
+	}
+
+	.nav-footer-btns-container{
+		clear: both;
 	}
 </style>
 <!-- <pre>{{ formGeneratorVm.src | json }}</pre> -->
@@ -26,8 +51,10 @@
 				<ul class="nav nav-pills nav-justified">
 					<li ng-repeat="tab in formGeneratorVm.template"
 						ng-class="{ active : ($index + 1) == formGeneratorVm.currentTabIndex }">
-						<a data-toggle="pill"
+						<!-- <a data-toggle="pill"
 							ng-href="#form-tab-content-{{ $index + 1 }}"
+							ng-click="formGeneratorVm.changeCurrentTabIndex($event, $index)"> -->
+						<a href="#" 
 							ng-click="formGeneratorVm.changeCurrentTabIndex($event, $index)">
 							Step {{ $index + 1 }}
 						</a>
@@ -61,9 +88,10 @@
 									placeholder="{{ formControl['label'] }}"
 									input-attributes
 									custom-attributes="formControl['attributes']">
-							<div validation 
-								display-errors="gen_ng_form[formControl['model']]">
-								
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
 							</div>
 						</div><!-- /If type is text -->
 
@@ -81,6 +109,11 @@
 									input-attributes
 									custom-attributes="formControl['attributes']">
 							</select>
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div><!-- /If type is select -->
 
 						<!-- If type is button -->
@@ -130,6 +163,11 @@
 										ng-focus="formGeneratorVm.setOtherRadio(formControl['model'])"
 										placeholder="Other {{ formControl['label'] }}">
 							</label>
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div> <!-- /If type is radio&other -->
 
 						<!-- If type is checkbox -->
@@ -149,6 +187,11 @@
 										value="{{ option['value'] }}">
 								{{ option['label'] }}
 							</label>
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div> <!-- /If tpye is checkbox -->
 
 						<!-- If type is radio -->
@@ -169,6 +212,11 @@
  >
 								{{ option['label'] }}
 							</label>
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div> <!-- /If tpye is radio -->
 
 						<!-- If type is file -->
@@ -184,6 +232,11 @@
 									ng-model="formGeneratorVm.templateModel[formControl['model']]" ng-class="formControl['attributes']['class']"
 									input-attributes
 									custom-attributes="formControl['attributes']">
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div> <!-- /If type is file -->
 
 						<!-- If type is files (multiple files)-->
@@ -201,6 +254,11 @@
 									multiple
 									input-attributes
 									custom-attributes="formControl['attributes']">
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div> <!-- /If type is files (multiple files) -->
 
 						<!-- If type is file with preview -->
@@ -222,6 +280,38 @@
 									<img ng-src="{{formGeneratorVm.templateModel[formControl['model']]}}">
 								</div>
 							</div>
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
+						</div> <!-- /If type is file with preview -->
+
+						<!-- If type is multiple files with preview -->
+						<div ng-if="formControl['type'] == 'files&preview'"
+								ng-class="formControl.container_attributes['class']">
+
+							<label for="{{ formControl['model'] }}">
+								{{ formControl['label'] }}
+							</label>
+							<input type="file" 
+									name="{{ formControl['model'] }}"
+									id="{{ formControl['model'] }}"
+									ng-model="formGeneratorVm.templateModel[formControl['model']]"
+									ng-class="formControl['attributes']['class']"
+									multiple
+									input-attributes
+									custom-attributes="formControl['attributes']">
+							<div class="file-preview-container" ng-if="formGeneratorVm.templateModel[formControl['model']]">
+								<div class="file-preview" ng-repeat="image in formGeneratorVm.templateModel[formControl['model']]">
+									<img ng-src="{{image}}">
+								</div>
+							</div>
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div> <!-- /If type is file with preview -->
 
 						<!-- If type is textarea -->
@@ -240,6 +330,11 @@
 								rows="10"
 								placeholder="{{ column['label'] }}">
 							</textarea>
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div> <!-- /If type is textarea -->
 
 						<!-- If type is repeater -->
@@ -291,7 +386,11 @@
 									</div> <!-- /If type is textarea -->
 								</div>
 							</div>
-
+							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+								<p ng-repeat="error in formControl['errors']">
+									{{ error }}
+								</p>
+							</div>
 						</div><!-- If type is repeater -->
 			
 					</div> <!-- /Tab Controls Loop -->
@@ -299,7 +398,7 @@
 			</div> <!-- /Tab Content -->
 			<div class="nav-footer-btns-container">
 				<button type="button" class="btn btn-md btn-primary" ng-click="formGeneratorVm.previous()">&laquo; Previous</button>
-				<button type="button" class="btn btn-md btn-primary pull-right" ng-click="formGeneratorVm.next()" ng-if="formGeneratorVm.currentTabIndex < formGeneratorVm.template.length">Next &raquo;</button>
+				<button type="button" class="btn btn-md btn-primary pull-right" ng-click="formGeneratorVm.next(formGeneratorVm.template[formGeneratorVm.currentTabIndex - 1])" ng-if="formGeneratorVm.currentTabIndex < formGeneratorVm.template.length">Next &raquo;</button>
 				<button type="submit" class="btn btn-md btn-warning pull-right" ng-if="formGeneratorVm.currentTabIndex == formGeneratorVm.template.length">Submit &raquo;</button>
 			</div>
 		</form><!-- /Form -->
@@ -317,7 +416,8 @@
 				</div><!-- /If type is legend -->
 
 				<!-- If type is text -->
-				<div ng-if="formControl['type'] == 'text' || formControl['type'] == 'number' || formControl['type'] == 'email' || formControl['type'] == 'date'" ng-class="formControl.container_attributes['class']">
+				<div ng-if="formControl['type'] == 'text' || formControl['type'] == 'number' || formControl['type'] == 'email' || formControl['type'] == 'date'" ng-class="formControl.container_attributes['class']"
+				ng-if="formControl['is_shown']">
 					<label for="{{formControl['model']}}">
 						{{ formControl['label'] }}
 					</label>
@@ -329,6 +429,11 @@
 							placeholder="{{ formControl['label'] }}"
 							input-attributes
 							custom-attributes="formControl['attributes']">
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div><!-- /If type is text -->
 
 				<!-- If type is select -->
@@ -345,6 +450,11 @@
 							input-attributes
 							custom-attributes="formControl['attributes']">
 					</select>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div><!-- /If type is select -->
 
 				<!-- If type is button -->
@@ -394,6 +504,11 @@
 								ng-focus="formGeneratorVm.setOtherRadio(formControl['model'])"
 								placeholder="Other {{ formControl['label'] }}">
 					</label>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div> <!-- /If type is radio&other -->
 
 				<!-- If type is checkbox -->
@@ -413,6 +528,11 @@
 								value="{{ option['value'] }}">
 						{{ option['label'] }}
 					</label>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div> <!-- /If tpye is checkbox -->
 
 				<!-- If type is radio -->
@@ -430,9 +550,14 @@
 								id="{{ formControl['model'] + '_' + $index }}"
 								ng-model="formGeneratorVm.templateModel[formControl['model']]"
 								value="{{ option['value'] }}"
->
+	>
 						{{ option['label'] }}
 					</label>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div> <!-- /If tpye is radio -->
 
 				<!-- If type is file -->
@@ -448,6 +573,11 @@
 							ng-model="formGeneratorVm.templateModel[formControl['model']]" ng-class="formControl['attributes']['class']"
 							input-attributes
 							custom-attributes="formControl['attributes']">
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div> <!-- /If type is file -->
 
 				<!-- If type is files (multiple files)-->
@@ -465,6 +595,11 @@
 							multiple
 							input-attributes
 							custom-attributes="formControl['attributes']">
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div> <!-- /If type is files (multiple files) -->
 
 				<!-- If type is file with preview -->
@@ -486,6 +621,11 @@
 							<img ng-src="{{formGeneratorVm.templateModel[formControl['model']]}}">
 						</div>
 					</div>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div> <!-- /If type is file with preview -->
 
 				<!-- If type is textarea -->
@@ -504,6 +644,11 @@
 						rows="10"
 						placeholder="{{ column['label'] }}">
 					</textarea>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div> <!-- /If type is textarea -->
 
 				<!-- If type is repeater -->
@@ -555,10 +700,15 @@
 							</div> <!-- /If type is textarea -->
 						</div>
 					</div>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div><!-- If type is repeater -->
-			</div> <!-- /Tab Controls Loop -->
-			<div class="form-group">
-				<button type="submit" class="btn btn-md btn-warning pull-right">Submit &raquo;</button>
+			</div>
+			<div class="form-group text-right nav-footer-btns-container">
+				<button type="submit" class="btn btn-md btn-warning">Submit &raquo;</button>
 			</div>
 		</form>
 	</div>

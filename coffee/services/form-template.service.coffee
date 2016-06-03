@@ -22,6 +22,7 @@
 			src.map(@walkTabs)
 			return
 		walkTabs: (formControls) =>
+			return if formControls.length is 0
 			# walk through steps'/tabs' controls
 			formControls.map(@extractFormControl)
 			# Push single tab template to actual template
@@ -62,6 +63,7 @@
 			# Set control's attributes
 			@checkAndSetAttributesFor(control[3], 'attributes')
 			@checkAndSetAttributesFor(control[4], 'container_attributes')
+			@checkAndSetAttributesFor(control[5], 'rules')
 			return
 		setAttributes: (property) ->
 			(value) =>
@@ -94,6 +96,9 @@
 
 		getTemplate: ->
 			return @singleTabTemplate if @formType is 'single'
+			for i in [0...@template]
+				if @template[i].length is 0
+					delete @template[i]
 			@template
 
 		getFormType: ->

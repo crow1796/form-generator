@@ -2,6 +2,151 @@
   angular.module('form-generator', []);
 })(window, document, window.jQuery, window.angular);
 
+var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+(function(window, document, $, angular) {
+  var FormGeneratorController;
+  FormGeneratorController = (function() {
+    function FormGeneratorController(formTemplateService) {
+      this.formTemplateService = formTemplateService;
+      this.validate = bind(this.validate, this);
+      this.next = bind(this.next, this);
+      this.converter = this.formTemplateService.convertSource(this.src, this.templateValues);
+      this.template = this.converter.getTemplate();
+      this.formType = this.converter.getFormType();
+      this.currentTabIndex = 1;
+      this.load();
+    }
+
+    FormGeneratorController.prototype.load = function() {
+      $(function() {});
+    };
+
+    FormGeneratorController.prototype.handleOtherInput = function(model) {
+      model = model + '_other';
+    };
+
+    FormGeneratorController.prototype.changeCurrentTabIndex = function(event, index) {
+      event.preventDefault();
+    };
+
+    FormGeneratorController.prototype.next = function(controls) {
+      var hasErrors;
+      if (this.currentTabIndex < this.template.length) {
+        hasErrors = this.validate(controls);
+        if (hasErrors === false) {
+          this.currentTabIndex = this.currentTabIndex + 1;
+        }
+      }
+    };
+
+    FormGeneratorController.prototype.previous = function() {
+      if (this.currentTabIndex > 1) {
+        this.currentTabIndex = this.currentTabIndex - 1;
+      }
+    };
+
+    FormGeneratorController.prototype.range = function(min, max, step) {
+      var i, input, j, ref, ref1;
+      step = step || 1;
+      input = [];
+      for (i = j = ref = min, ref1 = max; ref <= ref1 ? j < ref1 : j > ref1; i = ref <= ref1 ? ++j : --j) {
+        input.push(i);
+      }
+      return input;
+    };
+
+    FormGeneratorController.prototype.repeaterRemoveItem = function(model, formControl) {
+      var j, keyCounter, keys, ref;
+      if (this.templateModel[model] !== void 0) {
+        if (formControl['count'] === 1) {
+          this.templateModel[model] = {};
+        }
+      }
+      if (formControl['count'] > 1) {
+        formControl['count'] = formControl['count'] - 1;
+      }
+      if (this.templateModel[model] === void 0) {
+        return;
+      }
+      keys = Object.keys(this.templateModel[model]);
+      for (keyCounter = j = 0, ref = keys.length; 0 <= ref ? j < ref : j > ref; keyCounter = 0 <= ref ? ++j : --j) {
+        if (Object.keys(this.templateModel[model][keys[keyCounter]]).length >= formControl['count']) {
+          delete this.templateModel[model][keys[keyCounter]][formControl['count']];
+        }
+      }
+    };
+
+    FormGeneratorController.prototype.repeaterAddItem = function(model, formControl) {
+      formControl['count'] = formControl['count'] + 1;
+    };
+
+    FormGeneratorController.prototype.setOtherRadio = function(model) {
+      if (this.templateModel[model] === void 0) {
+        this.templateModel[model] = {};
+      }
+      this.templateModel[model]['index'] = model + "_other";
+    };
+
+    FormGeneratorController.prototype.clearOtherInput = function(model) {
+      if (this.templateModel[model] === void 0) {
+        this.templateModel[model] = {};
+      }
+      if (this.templateModel[model]['other_value'] !== void 0) {
+        delete this.templateModel[model]['other_value'];
+      }
+    };
+
+    FormGeneratorController.prototype.validate = function(controls) {
+      var hasErrors;
+      hasErrors = false;
+      controls.map((function(_this) {
+        return function(control) {
+          var controlIndex, i, j, ref, ruleNames;
+          control['errors'] = [];
+          if (control['rules'] === void 0) {
+            return;
+          }
+          controlIndex = _this.template[_this.currentTabIndex - 1].findIndex(function(element, index) {
+            return element['model'] === control['model'];
+          });
+          _this.template[_this.currentTabIndex - 1][controlIndex]['errors'] = [];
+          ruleNames = Object.keys(control['rules']);
+          for (i = j = 0, ref = ruleNames.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+            if (ruleNames[i] === 'required' && (control['rules']['required'] > 0 || control['rules']['required'] === 'true')) {
+              if (_this.templateModel[control['model']] === void 0 || _this.templateModel[control['model']] === '' || _this.templateModel[control['model']] === null) {
+                _this.template[_this.currentTabIndex - 1][controlIndex]['errors'].push(control['label'] + ' field is required.');
+                hasErrors = true;
+              }
+            } else if (ruleNames[i] === 'min') {
+              if (_this.templateModel[control['model']] === void 0) {
+                return;
+              }
+              if (_this.templateModel[control['model']].length < control['rules']['min']) {
+                _this.template[_this.currentTabIndex - 1][controlIndex]['errors'].push(control['label'] + " must not be less than " + control['rules']['min'] + " characters.");
+                hasErrors = true;
+              }
+            } else if (ruleNames[i] === 'max') {
+              if (_this.templateModel[control['model']] === void 0) {
+                return;
+              }
+              if (_this.templateModel[control['model']].length > control['rules']['max']) {
+                _this.template[_this.currentTabIndex - 1][controlIndex]['errors'].push(control['label'] + " must not be more than " + control['rules']['max'] + " characters.");
+                hasErrors = true;
+              }
+            }
+          }
+        };
+      })(this));
+      return hasErrors;
+    };
+
+    return FormGeneratorController;
+
+  })();
+  angular.module('form-generator').controller('formGeneratorController', ['formTemplateService', FormGeneratorController]);
+})(window, document, window.jQuery, window.angular);
+
 (function(window, document, $, angular) {
   var FormGenerator;
   FormGenerator = (function() {
@@ -142,124 +287,6 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
   });
 })(window, document, window.jQuery, window.angular);
 
-(function(window, document, $, angular) {
-  var Validator;
-  Validator = (function() {
-    function Validator() {
-      this.restrict = 'A';
-      this.scope = {
-        displayErrors: '='
-      };
-    }
-
-    Validator.prototype.link = function(scope, element, attrs) {
-      console.log(scope.displayErrors);
-    };
-
-    return Validator;
-
-  })();
-  angular.module('form-generator').directive('validation', function() {
-    return new Validator();
-  });
-})(window, document, window.jQuery, window.angular);
-
-(function(window, document, $, angular) {
-  var FormGeneratorController;
-  FormGeneratorController = (function() {
-    function FormGeneratorController(formTemplateService) {
-      this.formTemplateService = formTemplateService;
-      this.converter = this.formTemplateService.convertSource(this.src, this.templateValues);
-      this.template = this.converter.getTemplate();
-      this.formType = this.converter.getFormType();
-      this.currentTabIndex = 1;
-      this.load();
-    }
-
-    FormGeneratorController.prototype.load = function() {
-      $(function() {});
-    };
-
-    FormGeneratorController.prototype.handleOtherInput = function(model) {
-      model = model + '_other';
-    };
-
-    FormGeneratorController.prototype.changeCurrentTabIndex = function(event, index) {
-      event.preventDefault();
-      this.currentTabIndex = index + 1;
-    };
-
-    FormGeneratorController.prototype.next = function() {
-      if (this.currentTabIndex < this.template.length) {
-        this.currentTabIndex = this.currentTabIndex + 1;
-      }
-    };
-
-    FormGeneratorController.prototype.previous = function() {
-      if (this.currentTabIndex > 1) {
-        this.currentTabIndex = this.currentTabIndex - 1;
-      }
-    };
-
-    FormGeneratorController.prototype.range = function(min, max, step) {
-      var i, input, j, ref, ref1;
-      step = step || 1;
-      input = [];
-      for (i = j = ref = min, ref1 = max; ref <= ref1 ? j < ref1 : j > ref1; i = ref <= ref1 ? ++j : --j) {
-        input.push(i);
-      }
-      return input;
-    };
-
-    FormGeneratorController.prototype.repeaterRemoveItem = function(model, formControl) {
-      var j, keyCounter, keys, ref;
-      if (this.templateModel[model] !== void 0) {
-        if (formControl['count'] === 1) {
-          this.templateModel[model] = {};
-        }
-      }
-      if (formControl['count'] > 1) {
-        formControl['count'] = formControl['count'] - 1;
-      }
-      if (this.templateModel[model] === void 0) {
-        return;
-      }
-      keys = Object.keys(this.templateModel[model]);
-      for (keyCounter = j = 0, ref = keys.length; 0 <= ref ? j < ref : j > ref; keyCounter = 0 <= ref ? ++j : --j) {
-        if (Object.keys(this.templateModel[model][keys[keyCounter]]).length >= formControl['count']) {
-          delete this.templateModel[model][keys[keyCounter]][formControl['count']];
-        }
-      }
-    };
-
-    FormGeneratorController.prototype.repeaterAddItem = function(model, formControl) {
-      formControl['count'] = formControl['count'] + 1;
-    };
-
-    FormGeneratorController.prototype.setOtherRadio = function(model) {
-      if (this.templateModel[model] === void 0) {
-        this.templateModel[model] = {};
-      }
-      this.templateModel[model]['index'] = model + "_other";
-    };
-
-    FormGeneratorController.prototype.clearOtherInput = function(model) {
-      if (this.templateModel[model] === void 0) {
-        this.templateModel[model] = {};
-      }
-      if (this.templateModel[model]['other_value'] !== void 0) {
-        delete this.templateModel[model]['other_value'];
-      }
-    };
-
-    FormGeneratorController.prototype.validate = function() {};
-
-    return FormGeneratorController;
-
-  })();
-  angular.module('form-generator').controller('formGeneratorController', ['formTemplateService', FormGeneratorController]);
-})(window, document, window.jQuery, window.angular);
-
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 (function(window, document, $, angular) {
@@ -291,6 +318,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     FormTemplateService.prototype.walkTabs = function(formControls) {
+      if (formControls.length === 0) {
+        return;
+      }
       formControls.map(this.extractFormControl);
       if (this.formType === 'single') {
         return;
@@ -323,6 +353,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       }
       this.checkAndSetAttributesFor(control[3], 'attributes');
       this.checkAndSetAttributesFor(control[4], 'container_attributes');
+      this.checkAndSetAttributesFor(control[5], 'rules');
     };
 
     FormTemplateService.prototype.setAttributes = function(property) {
@@ -359,8 +390,14 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     FormTemplateService.prototype.getTemplate = function() {
+      var i, j, ref;
       if (this.formType === 'single') {
         return this.singleTabTemplate;
+      }
+      for (i = j = 0, ref = this.template; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        if (this.template[i].length === 0) {
+          delete this.template[i];
+        }
       }
       return this.template;
     };

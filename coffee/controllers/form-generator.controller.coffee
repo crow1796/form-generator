@@ -15,12 +15,16 @@
 			return
 		changeCurrentTabIndex: (event, index) ->
 			event.preventDefault()
-			@currentTabIndex = (index + 1)
+			# @currentTabIndex = (index + 1)
 			return
-		next: ->
+		next: (controls) =>
+			
 			# validate(@currentTabIndex)
 			if @currentTabIndex < @template.length
-				@currentTabIndex = @currentTabIndex + 1
+				# If validation has no errors
+				hasErrors = @validate(controls)
+				if hasErrors is off
+					@currentTabIndex = @currentTabIndex + 1
 			return
 		previous: ->
 			if @currentTabIndex > 1
@@ -62,8 +66,34 @@
 			if @templateModel[model]['other_value'] isnt undefined
 				delete @templateModel[model]['other_value']
 			return
-		validate: ->
-			return
+		validate: (controls) =>
+			hasErrors = off
+			controls.map((control) =>
+				control['errors'] = []
+				return if control['rules'] is undefined
+				controlIndex = @template[@currentTabIndex - 1].findIndex((element, index) ->
+					element['model'] is control['model']
+					)
+				@template[@currentTabIndex - 1][controlIndex]['errors'] = []
+				ruleNames = Object.keys(control['rules'])
+				for i in [0...ruleNames.length]
+					if ruleNames[i] is 'required' and (control['rules']['required'] > 0 or control['rules']['required'] is 'true')
+						if @templateModel[control['model']] is undefined or @templateModel[control['model']] is '' or @templateModel[control['model']] is null
+							@template[@currentTabIndex - 1][controlIndex]['errors'].push(control['label'] + ' field is required.')
+							hasErrors = on
+					else if ruleNames[i] is 'min'
+						return if @templateModel[control['model']] is undefined
+						if @templateModel[control['model']].length < control['rules']['min']
+							@template[@currentTabIndex - 1][controlIndex]['errors'].push("#{control['label']} must not be less than #{control['rules']['min']} characters.")
+							hasErrors = on
+					else if ruleNames[i] is 'max'
+						return if @templateModel[control['model']] is undefined
+						if @templateModel[control['model']].length > control['rules']['max']
+							@template[@currentTabIndex - 1][controlIndex]['errors'].push("#{control['label']} must not be more than #{control['rules']['max']} characters.")
+							hasErrors = on
+				return
+				)
+			hasErrors
 
 
 	angular.module 'form-generator'
