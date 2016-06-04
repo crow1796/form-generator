@@ -57,8 +57,14 @@
 			@tmpControl['model'] = control[1]
 			@tmpControl['type'] = control[2]
 
-			if @tmpControl['type'] is 'repeater'
-				@tmpControl['count'] = 1
+			if @tmpControl['type'].indexOf('repeater') > -1 and @tmpControl['type'].indexOf(':') > -1
+				tmpRepeater = @tmpControl['type'].split(':')
+				if tmpRepeater[0] is 'repeater'
+					@tmpControl['count'] = 1
+					@tmpControl['type'] = tmpRepeater[0]
+					@tmpControl['max'] = parseInt tmpRepeater[1]
+				
+			
 
 			# Set control's attributes
 			@checkAndSetAttributesFor(control[3], 'attributes')

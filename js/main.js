@@ -65,7 +65,7 @@
               '%Hotels/ Guests Houses|[class:legend]',
               'Sleeping Capacity|sleeping_capacity|number|[class:form-control]|[class:form-group]',
               'Number of Guest Rooms|guest_room_numbers|number|[class:form-control]|[class:form-group]',
-              'About the Rooms|about_rooms|repeater|[class:form-control]|[class:form-group]',
+              'About the Rooms|about_rooms|repeater:3|[class:form-control]|[class:form-group]',
               '%Features|[class:legend]',
               'Features|features|checkbox|[class:form-checkbox]|[class:form-group]',
               'Current Licenses that are included in the Sale Offer|current_licenses|checkbox|[class:form-checkbox]|[class:form-group]',

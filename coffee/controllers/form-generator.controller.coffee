@@ -4,6 +4,7 @@
 			@converter = @formTemplateService.convertSource(@src, @templateValues)
 			@template = @converter.getTemplate()
 			@formType = @converter.getFormType()
+			console.log @template[2][11]
 			@currentTabIndex = 1
 			@load()
 		load: ->
@@ -52,6 +53,10 @@
 					delete @templateModel[model][keys[keyCounter]][formControl['count']]
 			return
 		repeaterAddItem: (model, formControl) ->
+			if formControl['max'] isnt undefined
+				if formControl['count'] <= formControl['max']
+					formControl['count'] = formControl['count'] + 1
+					return off
 			formControl['count'] = formControl['count'] + 1
 			return
 		setOtherRadio: (model) ->

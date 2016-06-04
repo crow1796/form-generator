@@ -14,6 +14,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       this.converter = this.formTemplateService.convertSource(this.src, this.templateValues);
       this.template = this.converter.getTemplate();
       this.formType = this.converter.getFormType();
+      console.log(this.template[2][11]);
       this.currentTabIndex = 1;
       this.load();
     }
@@ -78,6 +79,12 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     FormGeneratorController.prototype.repeaterAddItem = function(model, formControl) {
+      if (formControl['max'] !== void 0) {
+        if (formControl['count'] <= formControl['max']) {
+          formControl['count'] = formControl['count'] + 1;
+          return false;
+        }
+      }
       formControl['count'] = formControl['count'] + 1;
     };
 
@@ -338,6 +345,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     FormTemplateService.prototype.checkControl = function(control) {
+      var tmpRepeater;
       this.resetTmpControl;
       if (control[0].indexOf('%') === 0) {
         this.tmpControl['type'] = 'legend';
@@ -348,8 +356,13 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       this.tmpControl['label'] = control[0];
       this.tmpControl['model'] = control[1];
       this.tmpControl['type'] = control[2];
-      if (this.tmpControl['type'] === 'repeater') {
-        this.tmpControl['count'] = 1;
+      if (this.tmpControl['type'].indexOf('repeater') > -1 && this.tmpControl['type'].indexOf(':') > -1) {
+        tmpRepeater = this.tmpControl['type'].split(':');
+        if (tmpRepeater[0] === 'repeater') {
+          this.tmpControl['count'] = 1;
+          this.tmpControl['type'] = tmpRepeater[0];
+          this.tmpControl['max'] = parseInt(tmpRepeater[1]);
+        }
       }
       this.checkAndSetAttributesFor(control[3], 'attributes');
       this.checkAndSetAttributesFor(control[4], 'container_attributes');
