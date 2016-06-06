@@ -14,7 +14,6 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       this.converter = this.formTemplateService.convertSource(this.src, this.templateValues);
       this.template = this.converter.getTemplate();
       this.formType = this.converter.getFormType();
-      console.log(this.template[2][11]);
       this.currentTabIndex = 1;
       this.load();
     }
@@ -80,10 +79,11 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
     FormGeneratorController.prototype.repeaterAddItem = function(model, formControl) {
       if (formControl['max'] !== void 0) {
-        if (formControl['count'] <= formControl['max']) {
+        if (formControl['count'] < formControl['max']) {
           formControl['count'] = formControl['count'] + 1;
           return false;
         }
+        return false;
       }
       formControl['count'] = formControl['count'] + 1;
     };
@@ -169,7 +169,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         templateValues: '=',
         submit: '='
       };
-      this.templateUrl = 'coffee/templates/form-generator.html';
+      this.templateUrl = 'http://webprojectupdates.com/asianbusinessbrokers/wp-content/themes/asianbusinessbrokers/js/templates/form-generator.html';
     }
 
     FormGenerator.prototype.link = function(scope, element, attrs) {};
