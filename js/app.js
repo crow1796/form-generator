@@ -169,7 +169,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         templateValues: '=',
         submit: '='
       };
-      this.templateUrl = 'http://webprojectupdates.com/asianbusinessbrokers/wp-content/themes/asianbusinessbrokers/js/templates/form-generator.html';
+      this.templateUrl = 'coffee/templates/form-generator.html';
     }
 
     FormGenerator.prototype.link = function(scope, element, attrs) {};
@@ -363,6 +363,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
           this.tmpControl['type'] = tmpRepeater[0];
           this.tmpControl['max'] = parseInt(tmpRepeater[1]);
         }
+      }
+      if (this.tmpControl['type'] === 'repeater') {
+        this.tmpControl['count'] = 1;
       }
       this.checkAndSetAttributesFor(control[3], 'attributes');
       this.checkAndSetAttributesFor(control[4], 'container_attributes');

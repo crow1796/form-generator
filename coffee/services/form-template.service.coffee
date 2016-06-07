@@ -49,6 +49,8 @@
 			if control[0].indexOf('%') is 0
 				@tmpControl['type'] = 'legend'
 				@tmpControl['label'] = control[0].substring(1)
+				if control[2] isnt undefined
+					@tmpControl['model'] = control[2]
 				# Set Control's attributes
 				@checkAndSetAttributesFor(control[1], 'attributes')
 				return off
@@ -63,8 +65,9 @@
 					@tmpControl['count'] = 1
 					@tmpControl['type'] = tmpRepeater[0]
 					@tmpControl['max'] = parseInt tmpRepeater[1]
-				
-			
+
+			if @tmpControl['type'] is 'repeater'
+				@tmpControl['count'] = 1
 
 			# Set control's attributes
 			@checkAndSetAttributesFor(control[3], 'attributes')

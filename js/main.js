@@ -1127,12 +1127,13 @@
           ]
       };
       // this.template = [
-      // 'First Name|first_name|text|[class:form-control]|[class:form-group]', 
-      // 'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 
-      // 'Last Name|last_name|text|[class:form-control]|[class:form-group]', 
-      // 'Profile Picture|profile_picture|file&preview|[class:form-control]|[class:form-group]', 
-      // 'Repeater|repeater|repeater|[class:form-repeater]|[class:form-group]', 
-      // 'Click ME!|click_me|button|[class:btn btn-default btn-md]|[class:form-group]'];
+      //       'First Name|first_name|text|[class:form-control]|[class:form-group]', 
+      //       'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 
+      //       'Last Name|last_name|text|[class:form-control]|[class:form-group]', 
+      //       'Profile Picture|profile_picture|file&preview|[class:form-control]|[class:form-group]', 
+      //       'Repeater|repeater|repeater:3|[class:form-repeater]|[class:form-group]', 
+      //       'Click ME!|click_me|button|[class:btn btn-default btn-md]|[class:form-group]'
+      // ];
       // this.templateValues = {
       //   'month': [
       //     {
@@ -1218,6 +1219,36 @@
       //     }, {
       //       'label': 'Teexxt',
       //       'model': 'teexxt',
+      //       'type': 'text',
+      //       'attributes': {
+      //         'class': 'form-control'
+      //       },
+      //       'container_attributes': {
+      //         'class': 'form-group'
+      //       }
+      //     }, {
+      //       'label': 'Text-ting!',
+      //       'model': 'text_ting',
+      //       'type': 'text',
+      //       'attributes': {
+      //         'class': 'form-control'
+      //       },
+      //       'container_attributes': {
+      //         'class': 'form-group'
+      //       }
+      //     }, {
+      //       'label': 'Text-ting!',
+      //       'model': 'text_ting',
+      //       'type': 'text',
+      //       'attributes': {
+      //         'class': 'form-control'
+      //       },
+      //       'container_attributes': {
+      //         'class': 'form-group'
+      //       }
+      //     }, {
+      //       'label': 'Text-ting!',
+      //       'model': 'text_ting',
       //       'type': 'text',
       //       'attributes': {
       //         'class': 'form-control'

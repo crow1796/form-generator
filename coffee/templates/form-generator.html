@@ -71,6 +71,7 @@
 						<div ng-if="formControl['type'] == 'legend'" ng-class="formControl.container_attributes['class']">
 							<p ng-class="formControl['attributes']['class']">
 								{{ formControl['label'] }}
+								{{ templateModel[formControl['model']] }}
 							</p>
 						</div><!-- /If type is legend -->
 
@@ -351,39 +352,78 @@
 
 							<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 								ng-class="formControl.container_attributes['class']">
-								<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]" 
-									class="col-sm-{{ (12 / formGeneratorVm.templateValues[formControl['model']].length) | number:0 }}">
+								<!-- Horizontal Layout -->
+								<div ng-if="!formControl['container_attributes']['layout'] || formControl['container_attributes']['layout'] == 'horizontal'">
+									<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]"
+										class="col-sm-3">
 
-									<!-- If type is text -->
-									<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
-										<label for="{{column['model']}}">
-											{{ count + 1 }} . {{ column['label'] }}
-										</label>
-										<input type="{{column['type']}}" 
-												name="{{ [column['model']][count] }}"
-												id="{{ [column['model']][count] }}"
-												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+										<!-- If type is text -->
+										<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
+											<label for="{{column['model']}}">
+												{{ count + 1 }} . {{ column['label'] }}
+											</label>
+											<input type="{{column['type']}}" 
+													name="{{ [column['model']][count] }}"
+													id="{{ [column['model']][count] }}"
+													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+													ng-class="column['attributes']['class']"
+													placeholder="{{ column['label'] }}" input-attributes
+													custom-attributes="formControl['attributes']">
+										</div><!-- If type is text -->
+
+										<!-- If type is textarea -->
+										<div ng-if="column['type'] == 'textarea'"
+												ng-class="column.container_attributes['class']">
+											<label for="{{ column['model'] }}">
+												{{ column['label'] }}
+											</label>
+											<textarea name="{{ column['model'] }}" 
+												id="{{ column['model'] }}" 
 												ng-class="column['attributes']['class']"
-												placeholder="{{ column['label'] }}" input-attributes
-												custom-attributes="formControl['attributes']">
-									</div><!-- If type is text -->
+												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
+												custom-attributes="formControl['attributes']"
+												cols="30"
+												placeholder="{{ column['label'] }}"
+												rows="4">
+											</textarea>
+										</div> <!-- /If type is textarea -->
+									</div>
+								</div>
+								<!-- Vertical Layout -->
+								<div ng-if="formControl['container_attributes']['layout'] && formControl['container_attributes']['layout'] == 'vertical'">
+									<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]">
 
-									<!-- If type is textarea -->
-									<div ng-if="column['type'] == 'textarea'"
-											ng-class="column.container_attributes['class']">
-										<label for="{{ column['model'] }}">
-											{{ column['label'] }}
-										</label>
-										<textarea name="{{ column['model'] }}" 
-											id="{{ column['model'] }}" 
-											ng-class="column['attributes']['class']"
-											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
-											custom-attributes="formControl['attributes']"
-											cols="30"
-											placeholder="{{ column['label'] }}"
-											rows="4">
-										</textarea>
-									</div> <!-- /If type is textarea -->
+										<!-- If type is text -->
+										<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
+											<label for="{{column['model']}}">
+												{{ count + 1 }} . {{ column['label'] }}
+											</label>
+											<input type="{{column['type']}}" 
+													name="{{ [column['model']][count] }}"
+													id="{{ [column['model']][count] }}"
+													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+													ng-class="column['attributes']['class']"
+													placeholder="{{ column['label'] }}" input-attributes
+													custom-attributes="formControl['attributes']">
+										</div><!-- If type is text -->
+
+										<!-- If type is textarea -->
+										<div ng-if="column['type'] == 'textarea'"
+												ng-class="column.container_attributes['class']">
+											<label for="{{ column['model'] }}">
+												{{ column['label'] }}
+											</label>
+											<textarea name="{{ column['model'] }}" 
+												id="{{ column['model'] }}" 
+												ng-class="column['attributes']['class']"
+												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
+												custom-attributes="formControl['attributes']"
+												cols="30"
+												placeholder="{{ column['label'] }}"
+												rows="4">
+											</textarea>
+										</div> <!-- /If type is textarea -->
+									</div>
 								</div>
 							</div>
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
@@ -412,6 +452,7 @@
 				<div ng-if="formControl['type'] == 'legend'" ng-class="formControl.container_attributes['class']">
 					<p ng-class="formControl['attributes']['class']">
 						{{ formControl['label'] }}
+						{{ templateModel[formControl['model']] }}
 					</p>
 				</div><!-- /If type is legend -->
 
@@ -665,48 +706,86 @@
 
 					<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 						ng-class="formControl.container_attributes['class']">
-						<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]" 
-							class="col-sm-{{ (12 / formGeneratorVm.templateValues[formControl['model']].length) | number:0 }}">
+						<!-- Horizontal Layout -->
+						<div ng-if="!formControl['container_attributes']['layout'] || formControl['container_attributes']['layout'] == 'horizontal'">
+							<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]"
+								class="col-sm-3">
 
-							<!-- If type is text -->
-							<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
-								<label for="{{column['model']}}">
-									{{ count + 1 }} . {{ column['label'] }}
-								</label>
-								<input type="{{column['type']}}" 
-										name="{{ [column['model']][count] }}"
-										id="{{ [column['model']][count] }}"
-										ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+								<!-- If type is text -->
+								<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
+									<label for="{{column['model']}}">
+										{{ count + 1 }} . {{ column['label'] }}
+									</label>
+									<input type="{{column['type']}}" 
+											name="{{ [column['model']][count] }}"
+											id="{{ [column['model']][count] }}"
+											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+											ng-class="column['attributes']['class']"
+											placeholder="{{ column['label'] }}" input-attributes
+											custom-attributes="formControl['attributes']">
+								</div><!-- If type is text -->
+
+								<!-- If type is textarea -->
+								<div ng-if="column['type'] == 'textarea'"
+										ng-class="column.container_attributes['class']">
+									<label for="{{ column['model'] }}">
+										{{ column['label'] }}
+									</label>
+									<textarea name="{{ column['model'] }}" 
+										id="{{ column['model'] }}" 
 										ng-class="column['attributes']['class']"
-										placeholder="{{ column['label'] }}" input-attributes
-										custom-attributes="formControl['attributes']">
-							</div><!-- If type is text -->
+										ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
+										custom-attributes="formControl['attributes']"
+										cols="30"
+										placeholder="{{ column['label'] }}"
+										rows="4">
+									</textarea>
+								</div> <!-- /If type is textarea -->
+							</div>
+						</div>
+						<!-- Vertical Layout -->
+						<div ng-if="formControl['container_attributes']['layout'] && formControl['container_attributes']['layout'] == 'vertical'">
+							<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]">
 
-							<!-- If type is textarea -->
-							<div ng-if="column['type'] == 'textarea'"
-									ng-class="column.container_attributes['class']">
-								<label for="{{ column['model'] }}">
-									{{ column['label'] }}
-								</label>
-								<textarea name="{{ column['model'] }}" 
-									id="{{ column['model'] }}" 
-									ng-class="column['attributes']['class']"
-									ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
-									custom-attributes="formControl['attributes']"
-									cols="30"
-									placeholder="{{ column['label'] }}"
-									rows="4">
-								</textarea>
-							</div> <!-- /If type is textarea -->
+								<!-- If type is text -->
+								<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
+									<label for="{{column['model']}}">
+										{{ count + 1 }} . {{ column['label'] }}
+									</label>
+									<input type="{{column['type']}}" 
+											name="{{ [column['model']][count] }}"
+											id="{{ [column['model']][count] }}"
+											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+											ng-class="column['attributes']['class']"
+											placeholder="{{ column['label'] }}" input-attributes
+											custom-attributes="formControl['attributes']">
+								</div><!-- If type is text -->
+
+								<!-- If type is textarea -->
+								<div ng-if="column['type'] == 'textarea'">
+									<label for="{{ column['model'] }}">
+										{{ column['label'] }}
+									</label>
+									<textarea name="{{ column['model'] }}" 
+										id="{{ column['model'] }}" 
+										ng-class="column['attributes']['class']"
+										ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
+										custom-attributes="formControl['attributes']"
+										cols="30"
+										placeholder="{{ column['label'] }}"
+										rows="4">
+									</textarea>
+								</div>
+								</div> <!-- /If type is textarea -->
+							</div>
+						</div>
+						<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+							<p ng-repeat="error in formControl['errors']">
+								{{ error }}
+							</p>
 						</div>
 					</div>
-					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
-						<p ng-repeat="error in formControl['errors']">
-							{{ error }}
-						</p>
-					</div>
 				</div><!-- If type is repeater -->
-			</div>
 			<div class="form-group text-right nav-footer-btns-container">
 				<button type="submit" class="btn btn-md btn-warning">Submit &raquo;</button>
 			</div>
