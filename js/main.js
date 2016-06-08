@@ -6,110 +6,272 @@
       this.processForm = bind(this.processForm, this);
       this.templateModel = {};
       this.template = [
-          [
-              'First Name|first_name|text|[class:form-control]|[class:form-group]',
-              'Surname|surname|text|[class:form-control]|[class:form-group]',
-              'Nickname|nickname|text|[class:form-control]|[class:form-group]',
-              'Phone Number|phone_number|text|[class:form-control]|[class:form-group]',
-              'Email|email|email|[class:form-control]|[class:form-group]',
-              'Relationship to the Listing|listing_relationship|text|[class:form-control]|[class:form-group]',
-              'ID Information|id_information|text|[class:form-control]|[class:form-group]',
-              'How many MORE contacts would you like to add to this Listing?|listing_contacts|number|[class:form-control]|[class:form-group]',
-          ],
-          [
-              'Listing Date|listing_date|date|[class:form-control jq-datepick]|[class:form-group]',
-              'Business / Listing Name|listing_name|text|[class:form-control]|[class:form-group]',
-              'Main Business Category|main_business_category|select|[class:form-control]|[class:form-group]',
-              'Main Business Type|main_business_type|select|[class:form-control]|[class:form-group]',
-              'Secondary Business Category|secondary_business_category|checkbox|[class:form-checkbox]|[class:form-group half-col]',
-              'Secondary Business Type|secondary_business_type|checkbox|[class:form-checkbox]|[class:form-group half-col]',
-              'Listing Type|listing_type|radio|[class:form-radio]|[class:form-group clear]',
-              'Currently Operational?|currently_operational|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Address Line 1|address_line1|text|[class:form-control]|[class:form-group]',
-              'Address Line 2|address_line2|text|[class:form-control]|[class:form-group]',
-              'Province|province|select|[class:form-control]|[class:form-group clear-both]',
-              'District|district|select|[class:form-control]|[class:form-group]',
-              'City / Suburb|city_suburb|text|[class:form-control]|[class:form-group]',
-              'Post Code|post_code|text|[class:form-control]|[class:form-group]',
-              'Nearest Main Road|nearest_main_road|text|[class:form-control]|[class:form-group]',
-              'Tenure Options|tenure_options|radio|[class:form-radio]|[class:form-group]',
-              'Are there Transfer Fees?|transfer_fees|radio|[class:form-radio]|[class:form-group]',
-              'Building Type|building_type|radio|[class:form-radio]|[class:form-group]',
-              'How many floors?|floors_count|number|[class:form-control]|[class:form-group]',
-              'What is the First Level that Business in Conducted?|first_level_business_conduct|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Approx. Area of each level/floor (m2)|approx_area|repeater[class:form-control]|[class:form-group]',
-              'Car Parking|car_parking|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Stock|stock|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Transition|transition|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Reason for Selling|selling_reason|radio|[class:form-radio]|[class:form-group]',
-              'Inspection Times?|inspection_times|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Inspection Meeting Place?|inspection_place|text|[class:form-control]|[class:form-group]',
-              'Meeting Times|meeting_times|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Meeting Place for Meetings?|meeting_place|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Listing Participation|listing_participation|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Agreed Commission|agreed_commission|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Are there any Kick-Backs?|kick_backs|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Asking Price|asking_price|text|[class:form-control]|[class:form-group]',
-              'Vendor Finance|vendor_finance|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Company Included?|company_included|radio&other|[class:form-radio-other]|[class:form-group]'
-          ],
-          [
-              '%Land Details|[class:legend]',
-              'Size|size|text|[class:form-control]|[class:form-group]',
-              'Connected Utilities|connected_utilities|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Land Improvements|land_improvement|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Natural Features|natural_features|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Current Development Approvals|current_development_approvals|textarea|[class:form-control]|[class:form-group]',
-              'Rentals Encumbrances|rentals_encumbrances|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Other Encumbrances|other_encumbrances|textarea|[class:form-control]|[class:form-group]',
-              '%Hotels/ Guests Houses|[class:legend]',
-              'Sleeping Capacity|sleeping_capacity|number|[class:form-control]|[class:form-group]',
-              'Number of Guest Rooms|guest_room_numbers|number|[class:form-control]|[class:form-group]',
-              'About the Rooms|about_rooms|repeater:3|[class:form-control]|[class:form-group]',
-              '%Features|[class:legend]',
-              'Features|features|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Current Licenses that are included in the Sale Offer|current_licenses|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Currently Staffed?|currently_staffed|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Average Monthly Revenue (Low Season)|average_revenue_low_season|text|[class:form-control]|[class:form-group]',
-              'Average Revenue (High Season)|average_revenue_high_season|text|[class:form-control]|[class:form-group]',
-              'Average Monthly Revenue (Both Season)|average_revenue_both_season|text|[class:form-control]|[class:form-group]',
-              'Average Net Profit (Low Season)|average_net_low_season|text|[class:form-control]|[class:form-group]',
-              'Average Net Profit (High Season)|average_net_high_season|text|[class:form-control]|[class:form-group]',
-              'Average Net Profit (Both Seasons)|average_net_both_season|text|[class:form-control]|[class:form-group]',
-              'Can Financials be Shown to Potential Buyers?|financials_shown|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Average Monthly Electricity Bill|average_electric_bill|text|[class:form-control]|[class:form-group]',
-              'Average Monthly Water Bill|average_water_bill|text|[class:form-control]|[class:form-group]',
-              'Police|police|text|[class:form-control]|[class:form-group]',
-              '%TV Connection|[class:legend]',
-              'Number of Screens|tv_screens_number|number|[class:form-control]|[class:form-group]',
-              'Cost Per Month|tv_cost_per_month|text|[class:form-control]|[class:form-group]',
-              '%Internet Connection|[class:legend]',
-              'Wifi Enabled?|wifi_enabled|radio|[class:form-radio]|[class:form-group]',
-              'Cost Per Month|wifi_cost_per_month|text|[class:form-control]|[class:form-group]',
-              '%Online Assets INCLUDED in Sale and Online Reviews|[class:legend]',
-              'General|online_assets_included|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Online Booking Agencies|online_booking_agencies|checkbox|[class:form-checkbox]|[class:form-group]',
-              'Trip Advisor Rating|trip_advisor_rating|radio|[class:form-radio]|[class:form-group]'
-          ],
-          [
-              '%Supporting Documents & Terms and Conditions|[class:legend]',
-              'Can photos be used in Advertisements?|photo_advertisements|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Do we have a copy of the Channote|channote_copy|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Do we have the Assets List|assets_list|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Do we have a Floor Plan|floor_plan|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Do we have the Financials?|has_financials|radio&other|[class:form-radio-other]|[class:form-group]',
-              'Listing Terms and Conditions|listing_terms_conditions|checkbox|[class:form-checkbox]|[class:form-group]'
-          ],
-          [
-              'Advertisement / Post Heading|advertisement_post_heading|text|[class:form-control]|[class:form-group]',
-              'Agent\'s Comments|agents_comment|textarea|[class:form-control]|[class:form-group]',
-              'More Information|more_information|textarea|[class:form-control]|[class:form-group]',
-              'Featured Image|featured_image|file&preview|[class:form-control]|[class:form-group]',
-              'Gallery Images|galley_images|files&preview|[class:form-control]|[class:form-group]'
-          ]
-      ];
+                [
+                    // 'First Name|first_name|text|[class:form-control]|[class:form-group]',
+                    // 'Surname|surname|text|[class:form-control]|[class:form-group]',
+                    // 'Nickname|nickname|text|[class:form-control]|[class:form-group]',
+                    // 'Phone Number|phone_number|text|[class:form-control]|[class:form-group]',
+                    // 'Email|email|email|[class:form-control]|[class:form-group]',
+                    // 'Relationship to the Listing|listing_relationship|text|[class:form-control]|[class:form-group]',
+                    // 'ID Information|id_information|text|[class:form-control]|[class:form-group]',
+                    'Contacts|listing_contacts|repeater:3|[class:form-control]|[class:form-group listing-contacts-container]',
+                ],
+                [
+                    'Listing Date|listing_date|date|[class:form-control jq-datepick]|[class:form-group]',
+                    'Business / Listing Name|listing_name|text|[class:form-control]|[class:form-group]',
+                    'Main Business Category|main_business_category|select|[class:form-control]|[class:form-group]',
+                    'Main Business Type|main_business_type|select|[class:form-control]|[class:form-group]',
+                    'Secondary Business Category|secondary_business_category|checkbox|[class:form-checkbox]|[class:form-group half-col]',
+                    'Secondary Business Type|secondary_business_type|checkbox|[class:form-checkbox]|[class:form-group half-col]',
+                    'Listing Type|listing_type|radio|[class:form-radio]|[class:form-group clear]',
+                    'Currently Operational?|currently_operational|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Address Line 1|address_line1|text|[class:form-control]|[class:form-group]',
+                    'Address Line 2|address_line2|text|[class:form-control]|[class:form-group]',
+                    'Country|country|select|[class:form-control]|[class:form-group clear-both]',
+                    'Province|province|select|[class:form-control]|[class:form-group clear-both]',
+                    'District|district|select|[class:form-control]|[class:form-group]',
+                    '%Listing Number: |[class:legend listing-number]|listing_number',
+                    'City / Suburb|city_suburb|text|[class:form-control]|[class:form-group]',
+                    'Post Code|post_code|text|[class:form-control]|[class:form-group]',
+                    'Nearest Main Road|nearest_main_road|text|[class:form-control]|[class:form-group]',
+                    'Tenure Options|tenure_options|radio|[class:form-radio]|[class:form-group]',
+                    'Are there Transfer Fees?|transfer_fees|radio|[class:form-radio]|[class:form-group]',
+                    'Building Type|building_type|radio|[class:form-radio]|[class:form-group]',
+                    'How many floors?|floors_count|number|[class:form-control]|[class:form-group]',
+                    'What is the First Level that Business in Conducted?|first_level_business_conduct|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Approx. Area of each level/floor (m2)|approx_area|repeater[class:form-control]|[class:form-group]',
+                    'Car Parking|car_parking|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Stock|stock|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Transition|transition|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Reason for Selling|selling_reason|radio|[class:form-radio]|[class:form-group]',
+                    'Inspection Times?|inspection_times|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Inspection Meeting Place?|inspection_place|text|[class:form-control]|[class:form-group]',
+                    'Meeting Times|meeting_times|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Meeting Place for Meetings?|meeting_place|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Listing Participation|listing_participation|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Agreed Commission|agreed_commission|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Are there any Kick-Backs?|kick_backs|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Asking Price|asking_price|text|[class:form-control]|[class:form-group]',
+                    'Vendor Finance|vendor_finance|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Company Included?|company_included|radio&other|[class:form-radio-other]|[class:form-group]'
+                ],
+                [
+                    '%Land Details|[class:legend]',
+                    'Size|size|text|[class:form-control]|[class:form-group]',
+                    'Connected Utilities|connected_utilities|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Land Improvements|land_improvement|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Natural Features|natural_features|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Current Development Approvals|current_development_approvals|textarea|[class:form-control]|[class:form-group]',
+                    'Rentals Encumbrances|rentals_encumbrances|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Other Encumbrances|other_encumbrances|textarea|[class:form-control]|[class:form-group]',
+                    '%Hotels/ Guests Houses|[class:legend]',
+                    'Sleeping Capacity|sleeping_capacity|number|[class:form-control]|[class:form-group]',
+                    'Number of Guest Rooms|guest_room_numbers|number|[class:form-control]|[class:form-group]',
+                    'About the Rooms|about_rooms|repeater|[class:form-control]|[class:form-group]',
+                    '%Features|[class:legend]',
+                    'Features|features|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Current Licenses that are included in the Sale Offer|current_licenses|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Currently Staffed?|currently_staffed|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Average Monthly Revenue (Low Season)|average_revenue_low_season|text|[class:form-control]|[class:form-group]',
+                    'Average Revenue (High Season)|average_revenue_high_season|text|[class:form-control]|[class:form-group]',
+                    'Average Monthly Revenue (Both Season)|average_revenue_both_season|text|[class:form-control]|[class:form-group]',
+                    'Average Net Profit (Low Season)|average_net_low_season|text|[class:form-control]|[class:form-group]',
+                    'Average Net Profit (High Season)|average_net_high_season|text|[class:form-control]|[class:form-group]',
+                    'Average Net Profit (Both Seasons)|average_net_both_season|text|[class:form-control]|[class:form-group]',
+                    'Can Financials be Shown to Potential Buyers?|financials_shown|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Average Monthly Electricity Bill|average_electric_bill|text|[class:form-control]|[class:form-group]',
+                    'Average Monthly Water Bill|average_water_bill|text|[class:form-control]|[class:form-group]',
+                    'Police|police|text|[class:form-control]|[class:form-group]',
+                    '%TV Connection|[class:legend]',
+                    'Number of Screens|tv_screens_number|number|[class:form-control]|[class:form-group]',
+                    'Cost Per Month|tv_cost_per_month|text|[class:form-control]|[class:form-group]',
+                    '%Internet Connection|[class:legend]',
+                    'Wifi Enabled?|wifi_enabled|radio|[class:form-radio]|[class:form-group]',
+                    'Cost Per Month|wifi_cost_per_month|text|[class:form-control]|[class:form-group]',
+                    '%Online Assets INCLUDED in Sale and Online Reviews|[class:legend]',
+                    'General|online_assets_included|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Online Booking Agencies|online_booking_agencies|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Trip Advisor Rating|trip_advisor_rating|radio|[class:form-radio]|[class:form-group]'
+                ],
+                [
+                    '%Supporting Documents & Terms and Conditions|[class:legend]',
+                    'Can photos be used in Advertisements?|photo_advertisements|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Do we have a copy of the Channote|channote_copy|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Do we have the Assets List|assets_list|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Do we have a Floor Plan|floor_plan|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Do we have the Financials?|has_financials|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Listing Terms and Conditions|listing_terms_conditions|checkbox|[class:form-checkbox]|[class:form-group]'
+                ],
+                [
+                    'Advertisement / Post Heading|advertisement_post_heading|text|[class:form-control]|[class:form-group]',
+                    'Agent\'s Comments|agents_comment|textarea|[class:form-control]|[class:form-group]',
+                    'More Information|more_information|textarea|[class:form-control]|[class:form-group]',
+                    'Featured Image|featured_image|file&preview|[class:form-control]|[class:form-group]',
+                    'Gallery Images|galley_images|files&preview|[class:form-control]|[class:form-group]'
+                ]
+            ];
 
       this.templateValues = {
+          'listing_contacts': [
+              {
+                  'label': 'First Name',
+                  'model': 'first_name',
+                  'type': 'text',
+                  'attributes': {
+                      'class': 'form-control'
+                  },
+                  'container_attributes': {
+                      'class': 'form-group'
+                  },
+                  'rules': {
+                      'required': 'true'
+                  }
+              },
+              {
+                  'label': 'Surname',
+                  'model': 'surname',
+                  'type': 'text',
+                  'attributes': {
+                      'class': 'form-control'
+                  },
+                  'container_attributes': {
+                      'class': 'form-group'
+                  },
+                  'rules': {
+                      'required': 'true'
+                  }
+              },
+              {
+                  'label': 'Nickname',
+                  'model': 'nickname',
+                  'type': 'text',
+                  'attributes': {
+                      'class': 'form-control'
+                  },
+                  'container_attributes': {
+                      'class': 'form-group'
+                  },
+                  'rules': {
+                      'required': 'true'
+                  }
+              },
+              {
+                  'label': 'Mobile Number',
+                  'model': 'mobile_number',
+                  'type': 'text',
+                  'attributes': {
+                      'class': 'form-control'
+                  },
+                  'container_attributes': {
+                      'class': 'form-group'
+                  },
+                  'rules': {
+                      'required': 'true'
+                  }
+              },
+              {
+                  'label': 'Email',
+                  'model': 'email',
+                  'type': 'text',
+                  'attributes': {
+                      'class': 'form-control'
+                  },
+                  'container_attributes': {
+                      'class': 'form-group'
+                  },
+                  'rules': {
+                      'required': 'true'
+                  }
+              },
+              {
+                  'label': 'Relationship to the listing',
+                  'model': 'listing_relationship',
+                  'type': 'select',
+                  'attributes': {
+                      'class': 'form-control'
+                  },
+                  'container_attributes': {
+                      'class': 'form-group'
+                  },
+                  'rules': {
+                      'required': 'true'
+                  }
+              },
+              {
+                  'label': 'ID Information',
+                  'model': 'id_information',
+                  'type': 'radio&other',
+                  'attributes': {
+                      'class': 'form-radio'
+                  },
+                  'container_attributes': {
+                      'class': 'form-group'
+                  },
+                  'rules': {
+                      'required': 'true'
+                  }
+              }
+          ],
+          'listing_relationship':[
+              {
+                  'value': 'Owner',
+                  'label': 'Owner'
+              },
+              {
+                  'value': 'Partner',
+                  'label': 'Partner'
+              },
+              {
+                  'value': 'Company Director',
+                  'label': 'Company Director'
+              },
+              {
+                  'value': 'Owner’s Authorized Representative',
+                  'label': 'Owner’s Authorized Representative'
+              },
+              {
+                  'value': 'Agent / Broker',
+                  'label': 'Agent / Broker'
+              }
+          ],
+          'id_information': [
+              {
+                  'value': 'Thai National ID Card',
+                  'label': 'Thai National ID Card',
+                  'with': [
+                    {
+                      'label': 'Thai National ID Card',
+                      'model': 'thai_national_id_card',
+                      'type': 'text',
+                      'attributes': {
+                          'class': 'form-radio'
+                      },
+                      'container_attributes': {
+                          'class': 'form-group'
+                      },
+                      'rules': {
+                          'required': 'true'
+                      }
+                  }
+                ]
+              },
+              {
+                  'value': 'Passport',
+                  'label': 'Passport'
+              }
+          ],
+          'currently_opt_first_traded': [
+              {
+                'value': 2016,
+                'label': 2016
+              }
+          ],
+          'currently_opt_what_month': [
+            {
+              'value': 'January',
+              'label': 'January'
+            }
+          ],
           'listing_type': [
               {
                   'value': 'Property Sale (Freehold Premises)',
@@ -163,7 +325,36 @@
           'currently_operational': [
               {
                   'value': 'Yes',
-                  'label': 'Yes'
+                  'label': 'Yes',
+                  'with': [
+                      {
+                        'label': 'First Traded',
+                        'model': 'currently_opt_first_traded',
+                        'type': 'select',
+                        'attributes': {
+                            'class': 'form-radio'
+                        },
+                        'container_attributes': {
+                            'class': 'form-group'
+                        },
+                        'rules': {
+                            'required': 'true'
+                        }
+                    },{
+                        'label': 'What Month?',
+                        'model': 'currently_opt_what_month',
+                        'type': 'select',
+                        'attributes': {
+                            'class': 'form-radio'
+                        },
+                        'container_attributes': {
+                            'class': 'form-group'
+                        },
+                        'rules': {
+                            'required': 'true'
+                        }
+                    }
+                  ]
               },
               {
                   'value': 'No',
@@ -532,10 +723,41 @@
                   'label': 'No, however Progress Payments are expected'
               }
           ],
+          'capitalization': [
+            {
+              'value': 'one',
+              'label': 'one'
+            },
+            {
+              'value': 'two',
+              'label': 'two'
+            },
+            {
+              'value': 'three',
+              'label': 'three'
+            }
+          ],
           'company_included': [
               {
                   'value': 'Yes',
-                  'label': 'Yes'
+                  'label': 'Yes',
+                  'with': [
+                    {
+                      'label': 'Capitalization',
+                      'model': 'capitalization',
+                      'type': 'radio&other',
+                      'attributes': [
+                        {
+                          'class': 'form-radio'
+                        }
+                      ],
+                      'container_attributes': [
+                        {
+                          'class': 'form-group'
+                        }
+                      ]
+                    }
+                  ]
               },
               {
                   'value': 'No',

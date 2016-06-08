@@ -7,8 +7,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 (function(window, document, $, angular) {
   var FormGeneratorController;
   FormGeneratorController = (function() {
-    function FormGeneratorController(formTemplateService) {
+    function FormGeneratorController(formTemplateService, scope) {
       this.formTemplateService = formTemplateService;
+      this.scope = scope;
       this.validate = bind(this.validate, this);
       this.next = bind(this.next, this);
       this.converter = this.formTemplateService.convertSource(this.src, this.templateValues);
@@ -88,20 +89,47 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       formControl['count'] = formControl['count'] + 1;
     };
 
-    FormGeneratorController.prototype.setOtherRadio = function(model) {
-      if (this.templateModel[model] === void 0) {
-        this.templateModel[model] = {};
-      }
-      this.templateModel[model]['index'] = model + "_other";
+    FormGeneratorController.prototype.setOtherRadio = function(model, value) {
+      var joined;
+      joined = model.join('.');
+      _.unset(this.templateModel, joined);
+      model.push('index');
+      joined = model.join('.');
+      _.update(this.templateModel, joined, (function(_this) {
+        return function(originalValue) {
+          return value;
+        };
+      })(this));
     };
 
-    FormGeneratorController.prototype.clearOtherInput = function(model) {
-      if (this.templateModel[model] === void 0) {
-        this.templateModel[model] = {};
+    FormGeneratorController.prototype.setWithRadio = function(model, value) {
+      var joined;
+      joined = model.join('.');
+      if (_.has(this.templateModel, joined + '.with_value')) {
+        if (_.get(this.templateModel, joined + '.index') === value) {
+          return false;
+        }
       }
-      if (this.templateModel[model]['other_value'] !== void 0) {
-        delete this.templateModel[model]['other_value'];
-      }
+      _.unset(this.templateModel, joined);
+      model.push('index');
+      joined = model.join('.');
+      _.update(this.templateModel, joined, (function(_this) {
+        return function(originalValue) {
+          return value;
+        };
+      })(this));
+    };
+
+    FormGeneratorController.prototype.clearOtherInput = function(model, value) {
+      var joined, trim;
+      joined = model.join('.');
+      trim = joined.substring(0, joined.indexOf('.index'));
+      _.unset(this.templateModel, trim);
+      _.update(this.templateModel, joined, (function(_this) {
+        return function(originalValue) {
+          return value;
+        };
+      })(this));
     };
 
     FormGeneratorController.prototype.validate = function(controls) {
@@ -151,7 +179,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     return FormGeneratorController;
 
   })();
-  angular.module('form-generator').controller('formGeneratorController', ['formTemplateService', FormGeneratorController]);
+  angular.module('form-generator').controller('formGeneratorController', ['formTemplateService', '$scope', FormGeneratorController]);
 })(window, document, window.jQuery, window.angular);
 
 (function(window, document, $, angular) {
@@ -350,6 +378,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       if (control[0].indexOf('%') === 0) {
         this.tmpControl['type'] = 'legend';
         this.tmpControl['label'] = control[0].substring(1);
+        if (control[2] !== void 0) {
+          this.tmpControl['model'] = control[2];
+        }
         this.checkAndSetAttributesFor(control[1], 'attributes');
         return false;
       }

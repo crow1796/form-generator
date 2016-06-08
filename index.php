@@ -9,13 +9,14 @@
 		<script src="bower_components/angular/angular.js" type="text/javascript"></script>
 		<script src="bower_components/angular-messages/angular-messages.js" type="text/javascript"></script>
 		<script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+		<script src="js/loadash.js" type="text/javascript"></script>
 		<script src="js/app.js" type="text/javascript"></script>
 		<script src="js/main.js" type="text/javascript"></script>
 	</head>
 	<body>
 		<div class="form-generator-container" ng-controller="testController as testVm">
 			<div class="row">
-				<div class="col-sm-6 col-sm-offset-3">
+				<div class="col-sm-10 col-sm-offset-1">
 					<form-generator 
 						src="testVm.template"
 						template-model="testVm.templateModel"
@@ -25,7 +26,7 @@
 				</div>
 			</div>
 			<pre>
-				<!-- {{ testVm.templateModel | json }} -->
+				{{ testVm.templateModel | json }}
 			</pre>
 		</div>
 	</body>

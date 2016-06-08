@@ -1,6 +1,6 @@
 ((window, document, $, angular) ->
 	class FormGeneratorController
-		constructor: (@formTemplateService) ->
+		constructor: (@formTemplateService, @scope) ->
 			@converter = @formTemplateService.convertSource(@src, @templateValues)
 			@template = @converter.getTemplate()
 			@formType = @converter.getFormType()
@@ -59,17 +59,36 @@
 				return off
 			formControl['count'] = formControl['count'] + 1
 			return
-		setOtherRadio: (model) ->
-			if @templateModel[model] is undefined
-				@templateModel[model] = {}
-			@templateModel[model]['index'] = "#{model}_other"
-			return
-		clearOtherInput: (model) ->
-			if @templateModel[model] is undefined
-				@templateModel[model] = {}
+		setOtherRadio: (model, value) ->
+			joined = model.join('.')
+			_.unset(@templateModel, joined)
 
-			if @templateModel[model]['other_value'] isnt undefined
-				delete @templateModel[model]['other_value']
+			model.push('index')
+			joined = model.join('.')
+			_.update(@templateModel, joined, (originalValue) =>
+				value
+				)
+			return
+		setWithRadio: (model, value) ->
+			joined = model.join('.')
+			if _.has(@templateModel, joined + '.with_value') 
+				if _.get(@templateModel, joined + '.index') is value
+					return off
+			_.unset(@templateModel, joined)
+
+			model.push('index')
+			joined = model.join('.')
+			_.update(@templateModel, joined, (originalValue) =>
+				value
+				)
+			return
+		clearOtherInput: (model, value) ->
+			joined = model.join('.')
+			trim = joined.substring(0, joined.indexOf('.index'))
+			_.unset(@templateModel, trim)
+			_.update(@templateModel, joined, (originalValue) =>
+				value
+				)
 			return
 		validate: (controls) =>
 			hasErrors = off
@@ -102,6 +121,6 @@
 
 
 	angular.module 'form-generator'
-			.controller 'formGeneratorController', ['formTemplateService', FormGeneratorController]
+			.controller 'formGeneratorController', ['formTemplateService', '$scope', FormGeneratorController]
 	return
 )(window, document, window.jQuery, window.angular)

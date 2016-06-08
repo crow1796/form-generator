@@ -45,7 +45,7 @@
 <!-- https://egghead.io/lessons/angularjs-directives-talking-to-controllers -->
 <div ng-app="form-generator">
 	<div ng-if="formGeneratorVm.formType == 'tabbed'" class="form-tabbed">
-		<form ng-submit="formGeneratorVm.submit($event)" name="gen_ng_form" novalidate>
+		<form ng-submit="formGeneratorVm.submit($event)" name="gen_ng_form" enctype="multipart/form-data" novalidate>
 			<!-- Tab buttons -->
 			<div class="form-nav text-center">
 				<ul class="nav nav-pills nav-justified">
@@ -71,7 +71,7 @@
 						<div ng-if="formControl['type'] == 'legend'" ng-class="formControl.container_attributes['class']">
 							<p ng-class="formControl['attributes']['class']">
 								{{ formControl['label'] }}
-								{{ templateModel[formControl['model']] }}
+								{{ formGeneratorVm.templateModel[formControl['model']] }}
 							</p>
 						</div><!-- /If type is legend -->
 
@@ -132,7 +132,7 @@
 						<!-- If type is radio&other -->
 						<div ng-if="formControl['type'] == 'radio&other'"
 								ng-class="formControl.container_attributes['class']">
-								<label>
+								<label for="">
 									{{ formControl['label'] }}
 								</label>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
@@ -144,8 +144,76 @@
 										id="{{ formControl['model'] + '_' + $index }}"
 										ng-model="formGeneratorVm.templateModel[formControl['model']]['index']"
 										value="{{ option['value'] }}"
-										ng-change="formGeneratorVm.clearOtherInput(formControl['model'])">
+										ng-change="formGeneratorVm.clearOtherInput([formControl['model'], 'index'], option['value'])">
 								{{ option['label'] }}
+								<!-- Display With field -->
+								<span ng-if="option['with'] != undefined && formGeneratorVm.templateModel[formControl['model']]['index'] == option['value']">
+									<span ng-repeat="sub in option['with']">
+										<span ng-if="sub['type'] == 'text' || sub['type'] == 'number' || sub['type'] == 'email' || sub['type'] == 'text' || sub['type'] == 'date'" ng-class="formControl.container_attributes['class']">
+											<input type="{{ sub['type'] }}"
+													name="{{ sub['model'] }}_with"
+													id="{{ sub['model'] }}_with"
+													ng-model="formGeneratorVm.templateModel[formControl['model']][formControl['model']]['with_value'][sub['model']]"
+													ng-focus="formGeneratorVm.setWithRadio([formControl['model'], formControl['model']], option['value'])"
+													input-attributes
+													custom-attributes="option['with']['attributes']"
+													placeholder="{{ option['label'] }}">
+										</span>
+
+										<span ng-if="sub['type'] == 'select'" ng-class="sub.container_attributes['class']">
+											<label for="{{sub['model']}}">
+												{{ sub['label'] }}
+											</label>
+											<select name="{{ sub['model'] }}_with"
+													id="{{ sub['model'] }}_with"
+													ng-model="formGeneratorVm.templateModel[formControl['model']]['with_value'][sub['model']]"
+													ng-class="sub['attributes']['class']"
+													placeholder="{{ sub['label'] }}"
+													ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[sub['model']]"
+													ng-focus="formGeneratorVm.setWithRadio([formControl['model']], option['value'])"
+													input-attributes
+													custom-attributes="sub['attributes']">
+											</select>
+										</span><!-- /If type is select -->
+
+										<!-- If type is radio&other (inside radio&other) -->
+										<span ng-if="sub['type'] == 'radio&other'" ng-class="sub.container_attributes['class']">
+											<div>
+												<label for="">
+													{{ sub['label'] }}
+												</label>
+												<label ng-repeat="option in formGeneratorVm.templateValues[sub['model']]"
+														ng-class="sub['attributes']['class']">
+													<input type="radio"
+															name="{{ sub['model'] + '_' + $index }}"
+															id="{{ sub['model'] + '_' + $index }}"
+															ng-model="formGeneratorVm.templateModel[formControl['model']][sub['model']]['index']"
+															value="{{ option['value'] }}"
+															ng-change="formGeneratorVm.clearOtherInput([formControl['model'], sub['model'], 'index'], option['value'])">
+													{{ option['label'] }}
+												</label>
+
+												<label for="{{ sub['model'] }}_other"
+														ng-class="sub['attributes']['class']">
+													<input type="radio"
+															name="{{ sub['model'] }}_other"
+															id="{{ sub['model'] }}_other"
+															ng-model="formGeneratorVm.templateModel[formControl['model']][sub['model']]['index']"
+															value="{{ sub['model'] }}_other"
+															ng-change="formGeneratorVm.setOtherRadio([formControl['model'], sub['model']], sub['model'] + '_other')"
+															ng-checked="(formGeneratorVm.templateModel[sub['model']]['other_value'])">
+													Other
+													<input type="text"
+															name="{{ sub['model'] }}_other"
+															id="{{ sub['model'] }}_other"
+															ng-model="formGeneratorVm.templateModel[formControl['model']][sub['model']]['other_value']"
+															ng-focus="formGeneratorVm.setOtherRadio([formControl['model'], sub['model']], sub['model'] + '_other')"
+															placeholder="Other {{ sub['label'] }}">
+												</label>
+											</div>
+										</span><!-- If type is radio&other (inside radio&other) -->
+									</span>
+								</span>
 							</label>
 
 							<label for="{{ formControl['model'] }}_other"
@@ -155,13 +223,14 @@
 										id="{{ formControl['model'] }}_other"
 										ng-model="formGeneratorVm.templateModel[formControl['model']]['index']"
 										value="{{ formControl['model'] }}_other"
+										ng-change="formGeneratorVm.setOtherRadio([formControl['model'], formControl['model']], formControl['model'] + '_other')"
 										ng-checked="(formGeneratorVm.templateModel[formControl['model']]['other_value'])">
 								Other
 								<input type="text"
 										name="{{ formControl['model'] }}_other"
 										id="{{ formControl['model'] }}_other"
 										ng-model="formGeneratorVm.templateModel[formControl['model']]['other_value']"
-										ng-focus="formGeneratorVm.setOtherRadio(formControl['model'])"
+										ng-focus="formGeneratorVm.setOtherRadio([formControl['model']], formControl['model'] + '_other')"
 										placeholder="Other {{ formControl['label'] }}">
 							</label>
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
@@ -352,78 +421,133 @@
 
 							<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 								ng-class="formControl.container_attributes['class']">
-								<!-- Horizontal Layout -->
-								<div ng-if="!formControl['container_attributes']['layout'] || formControl['container_attributes']['layout'] == 'horizontal'">
-									<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]"
-										class="col-sm-3">
+								<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]" 
+									class="col-sm-4">
+									<!-- If type is text -->
+									<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
+										<label for="{{column['model']}}">
+											{{ count + 1 }} . {{ column['label'] }}
+										</label>
+										<input type="{{column['type']}}" 
+												name="{{ [column['model']][count] }}"
+												id="{{ [column['model']][count] }}"
+												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+												ng-class="column['attributes']['class']"
+												placeholder="{{ column['label'] }}" input-attributes
+												custom-attributes="formControl['attributes']">
+									</div><!-- If type is text -->
 
-										<!-- If type is text -->
-										<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
-											<label for="{{column['model']}}">
+									<!-- If type is select -->
+									<div ng-if="column['type'] == 'select'" ng-class="column.container_attributes['class']">
+										<label for="{{column['model']}}">
+											{{ column['label'] }}
+										</label>
+										<select name="{{column['model']}}"
+												id="{{column['model']}}"
+												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
+												ng-class="column['attributes']['class']"
+												placeholder="{{ column['label'] }}"
+												ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[column['model']]"
+												input-attributes
+												custom-attributes="column['attributes']">
+										</select>
+										<div class="field-errors-container" ng-if="column['errors'].length > 0">
+											<p ng-repeat="error in column['errors']">
+												{{ error }}
+											</p>
+										</div>
+									</div><!-- /If type is select -->
+
+									<!-- If type is radio&other -->
+									<div ng-if="column['type'] == 'radio&other'"
+											ng-class="column.container_attributes['class']">
+											<label>
 												{{ count + 1 }} . {{ column['label'] }}
 											</label>
-											<input type="{{column['type']}}" 
-													name="{{ [column['model']][count] }}"
-													id="{{ [column['model']][count] }}"
-													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
-													ng-class="column['attributes']['class']"
-													placeholder="{{ column['label'] }}" input-attributes
-													custom-attributes="formControl['attributes']">
-										</div><!-- If type is text -->
-
-										<!-- If type is textarea -->
-										<div ng-if="column['type'] == 'textarea'"
-												ng-class="column.container_attributes['class']">
-											<label for="{{ column['model'] }}">
-												{{ column['label'] }}
-											</label>
-											<textarea name="{{ column['model'] }}" 
-												id="{{ column['model'] }}" 
+										<label ng-repeat="option in formGeneratorVm.templateValues[column['model']]"
 												ng-class="column['attributes']['class']"
-												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
-												custom-attributes="formControl['attributes']"
-												cols="30"
-												placeholder="{{ column['label'] }}"
-												rows="4">
-											</textarea>
-										</div> <!-- /If type is textarea -->
-									</div>
-								</div>
-								<!-- Vertical Layout -->
-								<div ng-if="formControl['container_attributes']['layout'] && formControl['container_attributes']['layout'] == 'vertical'">
-									<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]">
+												input-attributes
+												custom-attributes="column['attributes']">
+											<input type="radio"
+													name="{{ column['model'] + '_' + $index }}"
+													id="{{ column['model'] + '_' + $index }}"
+													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]['index']"
+													value="{{ option['value'] }}"
+													ng-change="formGeneratorVm.clearOtherInput([formControl['model'], column['model'], count, 'index'], option['label'])">
+											{{ option['label'] }}
+											<!-- Display With field -->
+											<span ng-if="option['with'] != undefined && formGeneratorVm.templateModel[formControl['model']][column['model']][count]['index'] == option['value']">
+												<span ng-repeat="sub in option['with']">
+													<span ng-if="sub['type'] == 'text' || sub['type'] == 'number' || sub['type'] == 'email' || sub['type'] == 'text' || sub['type'] == 'date'" ng-class="column.container_attributes['class']">
+														<input type="{{ sub['type'] }}"
+																name="{{ sub['model'] }}_with"
+																id="{{ sub['model'] }}_with"
+																ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]['with_value'][sub['model']]"
+																ng-focus="formGeneratorVm.setWithRadio([formControl['model'], column['model'], count], option['value'])"
+																input-attributes
+																custom-attributes="option['with']['attributes']"
+																placeholder="{{ option['label'] }}">
+													</span>
 
-										<!-- If type is text -->
-										<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
-											<label for="{{column['model']}}">
-												{{ count + 1 }} . {{ column['label'] }}
-											</label>
-											<input type="{{column['type']}}" 
-													name="{{ [column['model']][count] }}"
-													id="{{ [column['model']][count] }}"
-													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
-													ng-class="column['attributes']['class']"
-													placeholder="{{ column['label'] }}" input-attributes
-													custom-attributes="formControl['attributes']">
-										</div><!-- If type is text -->
+													<span ng-if="sub['type'] == 'select'" ng-class="sub.container_attributes['class']">
+														<label for="{{sub['model']}}">
+															{{ sub['label'] }}
+														</label>
+														<select name="{{ sub['model'] }}_with"
+																id="{{ sub['model'] }}_with"
+																ng-model="formGeneratorVm.templateModel[column['model']]['with_value'][sub['model']]"
+																ng-class="sub['attributes']['class']"
+																placeholder="{{ sub['label'] }}"
+																ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[sub['model']]"
+																ng-focus="formGeneratorVm.setWithRadio([formControl['model'],column['model']], option['value'])"
+																input-attributes
+																custom-attributes="sub['attributes']">
+														</select>
+													</span><!-- /If type is select -->
+												</span>
+											</span>
+										</label>
 
-										<!-- If type is textarea -->
-										<div ng-if="column['type'] == 'textarea'"
-												ng-class="column.container_attributes['class']">
-											<label for="{{ column['model'] }}">
-												{{ column['label'] }}
-											</label>
-											<textarea name="{{ column['model'] }}" 
-												id="{{ column['model'] }}" 
-												ng-class="column['attributes']['class']"
-												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
-												custom-attributes="formControl['attributes']"
-												cols="30"
-												placeholder="{{ column['label'] }}"
-												rows="4">
-											</textarea>
-										</div> <!-- /If type is textarea -->
-									</div>
+										<label for="{{ column['model'] }}_other"
+												ng-class="column['attributes']['class']">
+											<input type="radio"
+													name="{{ column['model'] }}_other"
+													id="{{ column['model'] }}_other"
+													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]['index']"
+													value="{{ column['model'] }}_other"
+													ng-change="formGeneratorVm.setOtherRadio([formControl['model'], column['model'], count], column['model'] + '_other')"
+													ng-checked="(formGeneratorVm.templateModel[column['model']]['other_value'])">
+											Other
+											<input type="text"
+													name="{{ column['model'] }}_other"
+													id="{{ column['model'] }}_other"
+													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]['other_value']"
+													ng-focus="formGeneratorVm.setOtherRadio([formControl['model'],column['model'], count], column['model'] + '_other')"
+													placeholder="Other {{ column['label'] }}">
+										</label>
+										<div class="field-errors-container" ng-if="column['errors'].length > 0">
+											<p ng-repeat="error in column['errors']">
+												{{ error }}
+											</p>
+										</div>
+									</div> <!-- /If type is radio&other -->
+
+									<!-- If type is textarea -->
+									<div ng-if="column['type'] == 'textarea'"
+											ng-class="column.container_attributes['class']">
+										<label for="{{ column['model'] }}">
+											{{ column['label'] }}
+										</label>
+										<textarea name="{{ column['model'] }}" 
+											id="{{ column['model'] }}" 
+											ng-class="column['attributes']['class']"
+											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
+											custom-attributes="formControl['attributes']"
+											cols="30"
+											placeholder="{{ column['label'] }}"
+											rows="4">
+										</textarea>
+									</div> <!-- /If type is textarea -->
 								</div>
 							</div>
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
@@ -446,13 +570,13 @@
 
 	<!-- /Single Form Container -->
 	<div ng-if="formGeneratorVm.formType == 'single'" class="form-single">
-		<form ng-submit="formGeneratorVm.submit($event)" name="gen_ng_form" novalidate>
+		<form ng-submit="formGeneratorVm.submit($event)" name="gen_ng_form" enctype="multipart/form-data" novalidate>
 			<div ng-repeat="formControl in formGeneratorVm.template">
 				<!-- If type is legend -->
 				<div ng-if="formControl['type'] == 'legend'" ng-class="formControl.container_attributes['class']">
 					<p ng-class="formControl['attributes']['class']">
 						{{ formControl['label'] }}
-						{{ templateModel[formControl['model']] }}
+						{{ formGeneratorVm.templateModel[formControl['model']] }}
 					</p>
 				</div><!-- /If type is legend -->
 
@@ -527,6 +651,35 @@
 								value="{{ option['value'] }}"
 								ng-change="formGeneratorVm.clearOtherInput(formControl['model'])">
 						{{ option['label'] }}
+						<!-- Display With field -->
+						<span ng-if="option['with'] != undefined">
+							<span ng-repeat="sub in option['with']">
+								<span ng-if="sub['type'] == 'text' || sub['type'] == 'number' || sub['type'] == 'email' || sub['type'] == 'text' || sub['type'] == 'date'" ng-class="formControl.container_attributes['class']">
+									<input type="{{ sub['type'] }}"
+											name="{{ sub['model'] }}_with"
+											id="{{ sub['model'] }}_with"
+											ng-model="formGeneratorVm.templateModel[formControl['model']]['with_value'][$index]"
+											ng-focus="formGeneratorVm.setWithRadio(formControl['model'], option['value'])"
+											input-attributes
+											custom-attributes="option['with']['attributes']"
+											placeholder="{{ option['label'] }}">
+								</span>
+
+								<span ng-if="sub['type'] == 'select'" ng-class="sub.container_attributes['class']">
+									<label for="{{sub['model']}}">
+										{{ sub['label'] }}
+									</label>
+									<select name="{{ sub['model'] }}_with"
+											id="{{ sub['model'] }}_with"
+											ng-model="formGeneratorVm.templateModel[formControl['model']]['with_value'][$index]"
+											ng-class="sub['attributes']['class']"
+											placeholder="{{ sub['label'] }}"
+											ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[sub['model']]"
+											ng-focus="formGeneratorVm.setWithRadio(formControl['model'], option['value'])"
+											input-attributes
+											custom-attributes="sub['attributes']">
+									</select>
+								</span><!-- /If type is select -->
 					</label>
 
 					<label for="{{ formControl['model'] }}_other"
@@ -536,6 +689,7 @@
 								id="{{ formControl['model'] }}_other"
 								ng-model="formGeneratorVm.templateModel[formControl['model']]['index']"
 								value="{{ formControl['model'] }}_other"
+								ng-change="formGeneratorVm.setOtherRadio(formControl['model'])"
 								ng-checked="(formGeneratorVm.templateModel[formControl['model']]['other_value'])">
 						Other
 						<input type="text"
@@ -706,86 +860,141 @@
 
 					<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 						ng-class="formControl.container_attributes['class']">
-						<!-- Horizontal Layout -->
-						<div ng-if="!formControl['container_attributes']['layout'] || formControl['container_attributes']['layout'] == 'horizontal'">
-							<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]"
-								class="col-sm-3">
+						<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]" 
+							class="col-sm-3">
 
-								<!-- If type is text -->
-								<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
-									<label for="{{column['model']}}">
-										{{ count + 1 }} . {{ column['label'] }}
-									</label>
-									<input type="{{column['type']}}" 
-											name="{{ [column['model']][count] }}"
-											id="{{ [column['model']][count] }}"
-											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
-											ng-class="column['attributes']['class']"
-											placeholder="{{ column['label'] }}" input-attributes
-											custom-attributes="formControl['attributes']">
-								</div><!-- If type is text -->
-
-								<!-- If type is textarea -->
-								<div ng-if="column['type'] == 'textarea'"
-										ng-class="column.container_attributes['class']">
-									<label for="{{ column['model'] }}">
-										{{ column['label'] }}
-									</label>
-									<textarea name="{{ column['model'] }}" 
-										id="{{ column['model'] }}" 
+							<!-- If type is text -->
+							<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
+								<label for="{{column['model']}}">
+									{{ count + 1 }} . {{ column['label'] }}
+								</label>
+								<input type="{{column['type']}}" 
+										name="{{ [column['model']][count] }}"
+										id="{{ [column['model']][count] }}"
+										ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
 										ng-class="column['attributes']['class']"
-										ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
-										custom-attributes="formControl['attributes']"
-										cols="30"
-										placeholder="{{ column['label'] }}"
-										rows="4">
-									</textarea>
-								</div> <!-- /If type is textarea -->
-							</div>
-						</div>
-						<!-- Vertical Layout -->
-						<div ng-if="formControl['container_attributes']['layout'] && formControl['container_attributes']['layout'] == 'vertical'">
-							<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]">
+										placeholder="{{ column['label'] }}" input-attributes
+										custom-attributes="formControl['attributes']">
+							</div><!-- If type is text -->
 
-								<!-- If type is text -->
-								<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
-									<label for="{{column['model']}}">
-										{{ count + 1 }} . {{ column['label'] }}
-									</label>
-									<input type="{{column['type']}}" 
-											name="{{ [column['model']][count] }}"
-											id="{{ [column['model']][count] }}"
-											ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
-											ng-class="column['attributes']['class']"
-											placeholder="{{ column['label'] }}" input-attributes
-											custom-attributes="formControl['attributes']">
-								</div><!-- If type is text -->
-
-								<!-- If type is textarea -->
-								<div ng-if="column['type'] == 'textarea'">
-									<label for="{{ column['model'] }}">
-										{{ column['label'] }}
-									</label>
-									<textarea name="{{ column['model'] }}" 
-										id="{{ column['model'] }}" 
+							<!-- If type is select -->
+							<div ng-if="column['type'] == 'select'" ng-class="column.container_attributes['class']">
+								<label for="{{column['model']}}">
+									{{ column['label'] }}
+								</label>
+								<select name="{{column['model']}}"
+										id="{{column['model']}}"
+										ng-model="formGeneratorVm.templateModel[column['model']]"
 										ng-class="column['attributes']['class']"
-										ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
-										custom-attributes="formControl['attributes']"
-										cols="30"
 										placeholder="{{ column['label'] }}"
-										rows="4">
-									</textarea>
+										ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[column['model']]"
+										input-attributes
+										custom-attributes="column['attributes']">
+								</select>
+								<div class="field-errors-container" ng-if="column['errors'].length > 0">
+									<p ng-repeat="error in column['errors']">
+										{{ error }}
+									</p>
 								</div>
-								</div> <!-- /If type is textarea -->
-							</div>
-						</div>
-						<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
-							<p ng-repeat="error in formControl['errors']">
-								{{ error }}
-							</p>
+							</div><!-- /If type is select -->
+
+							<!-- If type is radio&other -->
+							<div ng-if="column['type'] == 'radio&other'"
+									ng-class="column.container_attributes['class']">
+									<label>
+										{{ column['label'] }}
+									</label>
+								<label ng-repeat="option in formGeneratorVm.templateValues[column['model']]"
+										ng-class="column['attributes']['class']"
+										input-attributes
+										custom-attributes="column['attributes']">
+									<input type="radio"
+											name="{{ column['model'] + '_' + $index }}"
+											id="{{ column['model'] + '_' + $index }}"
+											ng-model="formGeneratorVm.templateModel[column['model']]['index']"
+											value="{{ option['value'] }}"
+											ng-change="formGeneratorVm.clearOtherInput(column['model'])">
+									{{ option['label'] }}
+									<!-- Display With field -->
+									<span ng-if="option['with'] != undefined">
+										<span ng-repeat="sub in option['with']">
+											<span ng-if="sub['type'] == 'text' || sub['type'] == 'number' || sub['type'] == 'email' || sub['type'] == 'text' || sub['type'] == 'date'" ng-class="column.container_attributes['class']">
+												<input type="{{ sub['type'] }}"
+														name="{{ sub['model'] }}_with"
+														id="{{ sub['model'] }}_with"
+														ng-model="formGeneratorVm.templateModel[column['model']]['with_value'][$index]"
+														ng-focus="formGeneratorVm.setWithRadio(column['model'], option['value'])"
+														input-attributes
+														custom-attributes="option['with']['attributes']"
+														placeholder="{{ option['label'] }}">
+											</span>
+
+											<span ng-if="sub['type'] == 'select'" ng-class="sub.container_attributes['class']">
+												<label for="{{sub['model']}}">
+													{{ sub['label'] }}
+												</label>
+												<select name="{{ sub['model'] }}_with"
+														id="{{ sub['model'] }}_with"
+														ng-model="formGeneratorVm.templateModel[column['model']]['with_value'][$index]"
+														ng-class="sub['attributes']['class']"
+														placeholder="{{ sub['label'] }}"
+														ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[sub['model']]"
+														ng-focus="formGeneratorVm.setWithRadio(column['model'], option['value'])"
+														input-attributes
+														custom-attributes="sub['attributes']">
+												</select>
+											</span><!-- /If type is select -->
+								</label>
+
+								<label for="{{ column['model'] }}_other"
+										ng-class="column['attributes']['class']">
+									<input type="radio"
+											name="{{ column['model'] }}_other"
+											id="{{ column['model'] }}_other"
+											ng-model="formGeneratorVm.templateModel[column['model']]['index']"
+											value="{{ column['model'] }}_other"
+											ng-change="formGeneratorVm.setOtherRadio(formControl['model'])"
+											ng-checked="(formGeneratorVm.templateModel[column['model']]['other_value'])">
+									Other
+									<input type="text"
+											name="{{ column['model'] }}_other"
+											id="{{ column['model'] }}_other"
+											ng-model="formGeneratorVm.templateModel[column['model']]['other_value']"
+											ng-focus="formGeneratorVm.setOtherRadio(column['model'])"
+											placeholder="Other {{ column['label'] }}">
+								</label>
+								<div class="field-errors-container" ng-if="column['errors'].length > 0">
+									<p ng-repeat="error in column['errors']">
+										{{ error }}
+									</p>
+								</div>
+							</div> <!-- /If type is radio&other -->
+
+							<!-- If type is textarea -->
+							<div ng-if="column['type'] == 'textarea'"
+									ng-class="column.container_attributes['class']">
+								<label for="{{ column['model'] }}">
+									{{ column['label'] }}
+								</label>
+								<textarea name="{{ column['model'] }}" 
+									id="{{ column['model'] }}" 
+									ng-class="column['attributes']['class']"
+									ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]" input-attributes
+									custom-attributes="formControl['attributes']"
+									cols="30"
+									placeholder="{{ column['label'] }}"
+									rows="4">
+								</textarea>
+							</div> <!-- /If type is textarea -->
 						</div>
 					</div>
+					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
+						<p ng-repeat="error in formControl['errors']">
+							{{ error }}
+						</p>
+					</div>
 				</div><!-- If type is repeater -->
+			</div>
 			<div class="form-group text-right nav-footer-btns-container">
 				<button type="submit" class="btn btn-md btn-warning">Submit &raquo;</button>
 			</div>
