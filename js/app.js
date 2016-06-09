@@ -132,6 +132,14 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       })(this));
     };
 
+    FormGeneratorController.prototype.clearCheckboxWithInputs = function(model) {
+      var joined;
+      joined = model.join('.');
+      if (_.get(this.templateModel, model)['status'] === false) {
+        _.unset(this.templateModel, model);
+      }
+    };
+
     FormGeneratorController.prototype.validate = function(controls) {
       var hasErrors;
       hasErrors = false;

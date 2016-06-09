@@ -15,6 +15,10 @@
                     // 'Relationship to the Listing|listing_relationship|text|[class:form-control]|[class:form-group]',
                     // 'ID Information|id_information|text|[class:form-control]|[class:form-group]',
                     'Contacts|listing_contacts|repeater:3|[class:form-control]|[class:form-group listing-contacts-container]',
+                    'Are there Transfer Fees?|transfer_fees|radio|[class:form-radio]|[class:form-group]',
+                    'Car Parking|car_parking|checkbox|[class:form-checkbox]|[class:form-group]',
+                    'Agreed Commission|agreed_commission|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Are there any Kick-Backs?|kick_backs|radio&other|[class:form-radio-other]|[class:form-group]',
                 ],
                 [
                     'Listing Date|listing_date|date|[class:form-control jq-datepick]|[class:form-group]',
@@ -35,12 +39,10 @@
                     'Post Code|post_code|text|[class:form-control]|[class:form-group]',
                     'Nearest Main Road|nearest_main_road|text|[class:form-control]|[class:form-group]',
                     'Tenure Options|tenure_options|radio|[class:form-radio]|[class:form-group]',
-                    'Are there Transfer Fees?|transfer_fees|radio|[class:form-radio]|[class:form-group]',
                     'Building Type|building_type|radio|[class:form-radio]|[class:form-group]',
                     'How many floors?|floors_count|number|[class:form-control]|[class:form-group]',
                     'What is the First Level that Business in Conducted?|first_level_business_conduct|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Approx. Area of each level/floor (m2)|approx_area|repeater[class:form-control]|[class:form-group]',
-                    'Car Parking|car_parking|checkbox|[class:form-checkbox]|[class:form-group]',
                     'Stock|stock|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Transition|transition|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Reason for Selling|selling_reason|radio|[class:form-radio]|[class:form-group]',
@@ -49,8 +51,6 @@
                     'Meeting Times|meeting_times|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Meeting Place for Meetings?|meeting_place|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Listing Participation|listing_participation|radio&other|[class:form-radio-other]|[class:form-group]',
-                    'Agreed Commission|agreed_commission|radio&other|[class:form-radio-other]|[class:form-group]',
-                    'Are there any Kick-Backs?|kick_backs|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Asking Price|asking_price|text|[class:form-control]|[class:form-group]',
                     'Vendor Finance|vendor_finance|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Company Included?|company_included|radio&other|[class:form-radio-other]|[class:form-group]'
@@ -391,10 +391,37 @@
                   'label': 'A longer Lease Period may be negotiated if required'
               }
           ],
+          'transfer_fees_responsible': [
+              {
+                  'value': 'Buyer',
+                  'label': 'Buyer'
+              },
+              {
+                  'value': 'Seller',
+                  'label': 'Seller'
+              },
+              {
+                  'value': 'Buyer and Seller (Divided Equally)',
+                  'label': 'Buyer and Seller (Divided Equally)'
+              }
+          ],
           'transfer_fees': [
               {
                   'value': 'Yes',
-                  'label': 'Yes'
+                  'label': 'Yes',
+                  'with': [
+                      {
+                          'label': 'Responsibility for Payment of Transfer Fees',
+                          'model': 'transfer_fees_responsible',
+                          'type': 'radio&other',
+                          'attributes': {
+                                  'class': 'form-radio-other'
+                          },
+                          'container_attributes': {
+                                  'class': 'form-group'
+                           }
+                      }
+                  ]
               },
               {
                   'value': 'No',
@@ -532,11 +559,37 @@
           'car_parking': [
               {
                   'value': 'Private Car Parking',
-                  'label': 'Private Car Parking'
+                  'label': 'Private Car Parking',
+                  'with': [
+                      {
+                        'label': 'Car Park Spaces',
+                        'model': 'car_park_spaces',
+                        'type': 'text',
+                        'attributes': {
+                          'class': 'form-control'
+                        },
+                        'container_attributes': {
+                          'class': 'form-group'
+                        }
+                      }
+                  ]
               },
               {
                   'value': 'Private Motor Bike Parking',
-                  'label': 'Private Motor Bike Parking'
+                  'label': 'Private Motor Bike Parking',
+                  'with': [
+                      {
+                        'label': 'Motor Bike Park Spaces',
+                        'model': 'motor_bike_park_spaces',
+                        'type': 'text',
+                        'attributes': {
+                          'class': 'form-control'
+                        },
+                        'container_attributes': {
+                          'class': 'form-group'
+                        }
+                      }
+                  ]
               },
               {
                   'value': 'Parking available in the nearby streets',
@@ -692,17 +745,67 @@
           'agreed_commission': [
               {
                   'value': 'Fixed Rate',
-                  'label': 'Fixed Rate'
+                  'label': 'Fixed Rate',
+                  'with': [
+                      {
+                        'label': 'How much is the Agreed Fixed Rate of Commission?',
+                        'model': 'fixed_rate',
+                        'type': 'text',
+                        'attributes': {
+                          'class': 'form-control'
+                        },
+                        'container_attributes': {
+                          'class': 'form-group'
+                        }
+                      }
+                  ]
               },
               {
                   'value': 'Percentage',
-                  'label': 'Percentage'
+                  'label': 'Percentage',
+                  'with': [
+                      {
+                        'label': 'What is the Commission Percentage?',
+                        'model': 'precentage_rate',
+                        'type': 'text',
+                        'attributes': {
+                          'class': 'form-control'
+                        },
+                        'container_attributes': {
+                          'class': 'form-group'
+                        }
+                      }
+                  ]
               }
           ],
           'kick_backs': [
               {
                   'value': 'Yes',
-                  'label': 'Yes'
+                  'label': 'Yes',
+                  'with': [
+                      {
+                        'label': 'How much is the Kick Backs?',
+                        'model': 'kick_back_how_much',
+                        'type': 'text',
+                        'attributes': {
+                          'class': 'form-control'
+                        },
+                        'container_attributes': {
+                          'class': 'form-group'
+                        }
+                      },
+                      {
+                        'label': 'Who is the Kick Back paid to?',
+                        'model': 'kick_back_who',
+                        'type': 'text',
+                        'attributes': {
+                          'class': 'form-control'
+                        },
+                        'container_attributes': {
+                          'class': 'form-group'
+                        }
+                      }
+                  ]
               },
               {
                   'value': 'No',

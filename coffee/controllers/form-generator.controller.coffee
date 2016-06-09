@@ -90,6 +90,11 @@
 				value
 				)
 			return
+		clearCheckboxWithInputs: (model) ->
+			joined = model.join('.')
+			if _.get(@templateModel, model)['status'] is false
+				_.unset(@templateModel, model)
+			return
 		validate: (controls) =>
 			hasErrors = off
 			controls.map((control) =>
