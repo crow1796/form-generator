@@ -22,7 +22,7 @@
                 ],
                 [
                     'Listing Date|listing_date|date|[class:form-control jq-datepick]|[class:form-group]',
-                    'Business / Listing Name|listing_name|text|[class:form-control]|[class:form-group]',
+                    'Business / Listing Name|listing_name|text|[class:form-control]|[class:form-group]|[required:true@min:2]',
                     'Main Business Category|main_business_category|select|[class:form-control]|[class:form-group]',
                     'Main Business Type|main_business_type|select|[class:form-control]|[class:form-group]',
                     'Secondary Business Category|secondary_business_category|checkbox|[class:form-checkbox]|[class:form-group half-col]',
@@ -122,9 +122,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                      'required': 'true'
                   }
               },
               {
@@ -136,9 +133,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                      'required': 'true'
                   }
               },
               {
@@ -150,9 +144,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                      'required': 'true'
                   }
               },
               {
@@ -164,9 +155,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                      'required': 'true'
                   }
               },
               {
@@ -178,9 +166,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                      'required': 'true'
                   }
               },
               {
@@ -192,9 +177,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                      'required': 'true'
                   }
               },
               {
@@ -206,9 +188,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                      'required': 'true'
                   }
               }
           ],
@@ -336,9 +315,6 @@
                         },
                         'container_attributes': {
                             'class': 'form-group'
-                        },
-                        'rules': {
-                            'required': 'true'
                         }
                     },{
                         'label': 'What Month?',
@@ -349,9 +325,6 @@
                         },
                         'container_attributes': {
                             'class': 'form-group'
-                        },
-                        'rules': {
-                            'required': 'true'
                         }
                     }
                   ]
@@ -1451,6 +1424,32 @@
               }
           ]
       };
+
+      this.template['load'] = function(){
+        console.log('asdas');
+      };
+
+      this.template['displayErrors'] = true;
+      this.template['afterNext'] = function(){
+        
+      };
+      this.template['afterNext'] = function(){
+        $(function(){
+          $('html, body').animate({
+            'scrollTop': ($('[name="gen_ng_form"]').offset().top - 50) + 'px'
+          });
+        });
+      };
+
+      this.template['onValidationFailed'] = function(errors){
+        console.log(errors);
+        $(function(){
+          $('html, body').animate({
+            'scrollTop': ($('[name="gen_ng_form"]').offset().top - 50) + 'px'
+          });
+        });
+      };
+      this.template['onSubmit'] = processForm;
       // this.template = [
       //       'First Name|first_name|text|[class:form-control]|[class:form-group]', 
       //       'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 
@@ -1596,9 +1595,12 @@
       // };
     }
 
+    function processForm(event, template){
+      console.log(template);
+    }
+
     TestController.prototype.processForm = function(event) {
-      event.preventDefault();
-      console.log(this.templateModel);
+      console.log("Submit");
     };
 
     TestController.prototype.handleClick = function() {

@@ -1,4 +1,7 @@
 <style type="text/css">
+	[id$="_other"], [id$="_with"]{
+		font-weight: normal;
+	}
 	.clear-both{
 		clear: both;
 	}
@@ -38,6 +41,31 @@
 	.nav-footer-btns-container{
 		clear: both;
 	}
+
+	.undo-button{
+		display: none;
+	}
+
+	.field-group:hover .undo-button{
+		display: inline !important;
+	}
+
+	.field-label{
+		height: 22px;
+		line-height: 22px;
+	}
+
+	.field-required-icon{
+		color: red;
+	}
+
+	.validation-errors-container{
+		margin: 10px 0;
+		padding: 8px;
+		color: red;
+		font-weight: bold;
+		background: rgba(255, 0, 0, 0.05);
+	}
 </style>
 <!-- <pre>{{ formGeneratorVm.src | json }}</pre> -->
 <!-- <hr> -->
@@ -45,16 +73,16 @@
 <!-- https://egghead.io/lessons/angularjs-directives-talking-to-controllers -->
 <div ng-app="form-generator">
 	<div ng-if="formGeneratorVm.formType == 'tabbed'" class="form-tabbed">
-		<form ng-submit="formGeneratorVm.submit($event)" name="gen_ng_form" enctype="multipart/form-data" novalidate>
+		<form ng-submit="formGeneratorVm.sendForm($event)" name="gen_ng_form" enctype="multipart/form-data" novalidate>
 			<!-- Tab buttons -->
 			<div class="form-nav text-center">
 				<ul class="nav nav-pills nav-justified">
 					<li ng-repeat="tab in formGeneratorVm.template"
-						ng-class="{ active : ($index + 1) == formGeneratorVm.currentTabIndex }">
+						ng-class="{ active : ($index + 1) == formGeneratorVm.template['currentTabIndex'] }">
 						<!-- <a data-toggle="pill"
 							ng-href="#form-tab-content-{{ $index + 1 }}"
 							ng-click="formGeneratorVm.changeCurrentTabIndex($event, $index)"> -->
-						<a href="#" 
+						<a href="#"
 							ng-click="formGeneratorVm.changeCurrentTabIndex($event, $index)">
 							Step {{ $index + 1 }}
 						</a>
@@ -63,8 +91,14 @@
 			</div> <!-- /Tab buttons -->
 
 			<div class="tab-content">
-				<div ng-repeat="tabbedForm in formGeneratorVm.template"  id="form-tab-content-{{ $index + 1 }}"  class="tab-pane fade in" ng-class="{ active : ($index + 1) == formGeneratorVm.currentTabIndex }">
-
+				<div ng-repeat="tabbedForm in formGeneratorVm.template"  id="form-tab-content-{{ $index + 1 }}"  class="tab-pane fade in" ng-class="{ active : ($index + 1) == formGeneratorVm.template['currentTabIndex'] }">
+					<div ng-if="formGeneratorVm.errors.length > 0" class="validation-errors-container">
+						<div ng-if="formGeneratorVm.template['displayErrors']">
+							<div ng-repeat="error in formGeneratorVm.errors track by $index" class="error-container">
+								{{ error }}
+							</div>
+						</div>
+					</div>
 					<div ng-repeat="formControl in tabbedForm">
 						
 						<!-- If type is legend -->
@@ -77,16 +111,22 @@
 
 						<!-- If type is text -->
 						<div ng-if="formControl['type'] == 'text' || formControl['type'] == 'number' || formControl['type'] == 'email' || formControl['type'] == 'date'" ng-class="formControl.container_attributes['class']"
-						ng-if="formControl['is_shown']">
-							<label for="{{formControl['model']}}">
+						ng-if="formControl['is_shown']" class="field-group">
+							<label for="{{formControl['model']}}" class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<input type="{{formControl['type']}}" 
 									name="{{formControl['model']}}"
 									id="{{formControl['model']}}"
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
 									ng-class="formControl['attributes']['class']"
-									placeholder="{{ formControl['label'] }}"
+									placeholder="Enter {{ formControl['label'] }}"
 									input-attributes
 									custom-attributes="formControl['attributes']">
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
@@ -97,9 +137,15 @@
 						</div><!-- /If type is text -->
 
 						<!-- If type is select -->
-						<div ng-if="formControl['type'] == 'select'" ng-class="formControl.container_attributes['class']">
-							<label for="{{formControl['model']}}">
+						<div ng-if="formControl['type'] == 'select'" ng-class="formControl.container_attributes['class']" class="field-group">
+							<label for="{{formControl['model']}}" class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<select name="{{formControl['model']}}"
 									id="{{formControl['model']}}"
@@ -109,6 +155,7 @@
 									ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[formControl['model']]"
 									input-attributes
 									custom-attributes="formControl['attributes']">
+									<option style="display:none" value="">Select {{ formControl['label'] }}</option>
 							</select>
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
 								<p ng-repeat="error in formControl['errors']">
@@ -131,9 +178,15 @@
 
 						<!-- If type is radio&other -->
 						<div ng-if="formControl['type'] == 'radio&other'"
-								ng-class="formControl.container_attributes['class']">
-								<label for="">
+								ng-class="formControl.container_attributes['class']" class="field-group">
+								<label for="" class="field-label">
 									{{ formControl['label'] }}
+									<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+										*
+									</span>
+									<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+										<span class="glyphicon glyphicon-repeat"></span>
+									</button>
 								</label>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 									ng-class="formControl['attributes']['class']"
@@ -155,6 +208,7 @@
 													id="{{ sub['model'] }}_with"
 													ng-model="formGeneratorVm.templateModel[formControl['model']]['with_value'][$index]"
 													ng-focus="formGeneratorVm.setWithRadio([formControl['model']], option['value'])"
+													ng-class="sub['attributes']['class']"
 													input-attributes
 													custom-attributes="option['with']['attributes']"
 													placeholder="{{ sub['label'] }}">
@@ -177,7 +231,7 @@
 										</span><!-- /If type is select -->
 
 										<!-- If type is radio&other (inside radio&other) -->
-										<span ng-if="sub['type'] == 'radio&other'" ng-class="sub.container_attributes['class']">
+										<span ng-if="sub['type'] == 'radio&other'" ng-class="sub.container_attributes['class']" class="field-group">
 											<div>
 												<label for="">
 													{{ sub['label'] }}
@@ -242,9 +296,15 @@
 
 						<!-- If type is checkbox -->
 						<div ng-if="formControl['type'] == 'checkbox'"
-								ng-class="formControl.container_attributes['class']">
-							<label>
+								ng-class="formControl.container_attributes['class']" class="field-group">
+							<label class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 										ng-class="formControl['attributes']['class']"
@@ -265,6 +325,7 @@
 													name="{{ sub['model'] }}"
 													id="{{ sub['model'] }}"
 													ng-model="formGeneratorVm.templateModel[formControl['model']][option['value']]['with_value'][$index]"
+													ng-class="sub['attributes']['class']"
 													input-attributes
 													custom-attributes="option['with']['attributes']"
 													placeholder="{{ option['label'] }}">
@@ -334,9 +395,15 @@
 
 						<!-- If type is radio -->
 						<div ng-if="formControl['type'] == 'radio'"
-								ng-class="formControl.container_attributes['class']">
-							<label>
+								ng-class="formControl.container_attributes['class']" class="field-group">
+							<label class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 										ng-class="formControl['attributes']['class']"
@@ -358,9 +425,10 @@
 													id="{{ sub['model'] }}"
 													ng-model="formGeneratorVm.templateModel[formControl['model']][sub['model']]"
 													ng-focus="formGeneratorVm.setWithRadio([formControl['model'], sub['model']], sub['value'])"
+													ng-class="sub['attributes']['class']"
 													input-attributes
 													custom-attributes="option['with']['attributes']"
-													placeholder="{{ option['label'] }}">
+													placeholder="{{ sub['label'] }}">
 										</span>
 
 										<span ng-if="sub['type'] == 'select'" ng-class="sub.container_attributes['class']">
@@ -427,10 +495,16 @@
 
 						<!-- If type is file -->
 						<div ng-if="formControl['type'] == 'file'"
-								ng-class="formControl.container_attributes['class']">
+								ng-class="formControl.container_attributes['class']" class="field-group">
 
-							<label for="{{ formControl['model'] }}">
+							<label for="{{ formControl['model'] }}" class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<input type="{{ formControl['type'] }}" 
 									name="{{ formControl['model'] }}"
@@ -447,10 +521,16 @@
 
 						<!-- If type is files (multiple files)-->
 						<div ng-if="formControl['type'] == 'files'"
-								ng-class="formControl.container_attributes['class']">
+								ng-class="formControl.container_attributes['class']" class="field-group">
 
-							<label for="{{ formControl['model'] }}">
+							<label for="{{ formControl['model'] }}" class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<input type="file" 
 									name="{{ formControl['model'] }}"
@@ -469,10 +549,16 @@
 
 						<!-- If type is file with preview -->
 						<div ng-if="formControl['type'] == 'file&preview'"
-								ng-class="formControl.container_attributes['class']">
+								ng-class="formControl.container_attributes['class']" class="field-group">
 
-							<label for="{{ formControl['model'] }}">
+							<label for="{{ formControl['model'] }}" class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<input type="file" 
 									name="{{ formControl['model'] }}"
@@ -495,10 +581,16 @@
 
 						<!-- If type is multiple files with preview -->
 						<div ng-if="formControl['type'] == 'files&preview'"
-								ng-class="formControl.container_attributes['class']">
+								ng-class="formControl.container_attributes['class']" class="field-group">
 
-							<label for="{{ formControl['model'] }}">
+							<label for="{{ formControl['model'] }}" class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<input type="file" 
 									name="{{ formControl['model'] }}"
@@ -522,9 +614,15 @@
 
 						<!-- If type is textarea -->
 						<div ng-if="formControl['type'] == 'textarea'"
-								ng-class="formControl.container_attributes['class']">
-							<label for="{{ formControl['model'] }}">
+								ng-class="formControl.container_attributes['class']" class="field-group">
+							<label for="{{ formControl['model'] }}" class="field-label">
 								{{ formControl['label'] }}
+								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
+									*
+								</span>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo(formControl['model'])" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
 							<textarea name="{{ formControl['model'] }}" 
 								id="{{ formControl['model'] }}" 
@@ -545,47 +643,73 @@
 
 						<!-- If type is repeater -->
 						<div ng-if="formControl['type'] == 'repeater'" ng-class="formControl.container_attributes['class']">
-							<label for="">
+							<label for="" id="{{ formControl['model'] }}_header" class="repeater-header">
 								{{ formControl['label'] }}
+								<button ng-if="!formControl['max']" type="button" class="btn btn-xs btn-warning" ng-click="formGeneratorVm.repeaterAddItem(formControl['model'], formControl)">
+									<span class="glyphicon glyphicon-plus-sign"></span>
+								</button>
+								<button ng-if="formControl['max'] && formControl['count'] < formControl['max']" type="button" class="btn btn-xs btn-warning" ng-click="formGeneratorVm.repeaterAddItem(formControl['model'], formControl)">
+									<span class="glyphicon glyphicon-plus-sign"></span>
+								</button>
+								<button type="button" class="btn btn-xs btn-danger" ng-click="formGeneratorVm.repeaterRemoveItem(formControl['model'], formControl)" ng-if="formControl['count'] > 1">
+									<span class="glyphicon glyphicon-minus-sign"></span>
+								</button>
 							</label>
-							<button type="button" class="btn btn-xs btn-warning" ng-click="formGeneratorVm.repeaterAddItem(formControl['model'], formControl)">
-								<span class="glyphicon glyphicon-plus-sign"></span>
-							</button>
-							<button type="button" class="btn btn-xs btn-danger" ng-click="formGeneratorVm.repeaterRemoveItem(formControl['model'], formControl)" ng-if="formControl['count'] >= 1">
-								<span class="glyphicon glyphicon-minus-sign"></span>
-							</button>
 
 							<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 								ng-class="formControl.container_attributes['class']">
+								<div class="col-sm-12" ng-if="formControl['attributes']['row_label']">
+									<p class="legend">
+										{{ formControl['attributes']['row_label'] }} {{ count + 1 }}
+									</p>
+								</div>
 								<div ng-repeat="column in formGeneratorVm.templateValues[formControl['model']]" 
 									class="col-sm-4">
 									<!-- If type is text -->
-									<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'">
-										<label for="{{column['model']}}">
-											{{ count + 1 }} . {{ column['label'] }}
+									<div ng-if="column['type'] == 'text' || column['type'] == 'number' || column['type'] == 'email' || column['type'] == 'date'" class="field-group">
+										<label for="{{column['model']}}" class="field-label">
+											{{ column['label'] }}
+											<span ng-if="column['rules']['required'] != undefined && column['rules']['required'] == 'true' || column['rules']['required'] == true || column['rules']['required'] == 1" class="field-required-icon">
+												*
+											</span>
+											<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo([formControl['model'], column['model'], count])" title="Undo">
+												<span class="glyphicon glyphicon-repeat"></span>
+											</button>
 										</label>
 										<input type="{{column['type']}}" 
 												name="{{ [column['model']][count] }}"
 												id="{{ [column['model']][count] }}"
 												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
 												ng-class="column['attributes']['class']"
-												placeholder="{{ column['label'] }}" input-attributes
+												placeholder="Enter {{ column['label'] }}" input-attributes
 												custom-attributes="formControl['attributes']">
+										<div class="field-errors-container" ng-if="column['errors'].length > 0">
+											<p ng-repeat="error in column['errors']">
+												{{ error }}
+											</p>
+										</div>
 									</div><!-- If type is text -->
 
 									<!-- If type is select -->
-									<div ng-if="column['type'] == 'select'" ng-class="column.container_attributes['class']">
-										<label for="{{column['model']}}">
+									<div ng-if="column['type'] == 'select'" ng-class="column.container_attributes['class']" class="field-group">
+										<label for="{{column['model']}}" class="field-label">
 											{{ column['label'] }}
+											<span ng-if="column['rules']['required'] != undefined && column['rules']['required'] == 'true' || column['rules']['required'] == true || column['rules']['required'] == 1" class="field-required-icon">
+												*
+											</span>
+											<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo([formControl['model'], column['model'], count])" title="Undo">
+												<span class="glyphicon glyphicon-repeat"></span>
+											</button>
 										</label>
 										<select name="{{column['model']}}"
 												id="{{column['model']}}"
 												ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]"
 												ng-class="column['attributes']['class']"
-												placeholder="{{ column['label'] }}"
+												placeholder="Enter {{ column['label'] }}"
 												ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[column['model']]"
 												input-attributes
 												custom-attributes="column['attributes']">
+												<option style="display:none" value="">Select {{ column['label'] }}</option>
 										</select>
 										<div class="field-errors-container" ng-if="column['errors'].length > 0">
 											<p ng-repeat="error in column['errors']">
@@ -596,17 +720,23 @@
 
 									<!-- If type is radio&other -->
 									<div ng-if="column['type'] == 'radio&other'"
-											ng-class="column.container_attributes['class']">
-											<label>
-												{{ count + 1 }} . {{ column['label'] }}
+											ng-class="column.container_attributes['class']" class="field-group">
+											<label class="field-label">
+												{{ column['label'] }}
+												<span ng-if="column['rules']['required'] != undefined && column['rules']['required'] == 'true' || column['rules']['required'] == true || column['rules']['required'] == 1" class="field-required-icon">
+													*
+												</span>
+												<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo([formControl['model'], column['model'], count])" title="Undo">
+													<span class="glyphicon glyphicon-repeat"></span>
+												</button>
 											</label>
 										<label ng-repeat="option in formGeneratorVm.templateValues[column['model']]"
 												ng-class="column['attributes']['class']"
 												input-attributes
 												custom-attributes="column['attributes']">
 											<input type="radio"
-													name="{{ column['model'] + '_' + $index }}"
-													id="{{ column['model'] + '_' + $index }}"
+													name="{{ column['model'] + '_' + count }}"
+													id="{{ column['model'] + '_' + count }}"
 													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]['index']"
 													value="{{ option['value'] }}"
 													ng-change="formGeneratorVm.clearOtherInput([formControl['model'], column['model'], count, 'index'], option['label'])">
@@ -622,7 +752,7 @@
 																ng-focus="formGeneratorVm.setWithRadio([formControl['model'], column['model'], count], option['value'])"
 																input-attributes
 																custom-attributes="option['with']['attributes']"
-																placeholder="{{ option['label'] }}">
+																placeholder="Enter {{ option['label'] }}">
 													</span>
 
 													<span ng-if="sub['type'] == 'select'" ng-class="sub.container_attributes['class']">
@@ -633,7 +763,7 @@
 																id="{{ sub['model'] }}_with"
 																ng-model="formGeneratorVm.templateModel[column['model']]['with_value'][sub['model']]"
 																ng-class="sub['attributes']['class']"
-																placeholder="{{ sub['label'] }}"
+																placeholder="Enter {{ sub['label'] }}"
 																ng-options="option['value'] as option['label'] for option in formGeneratorVm.templateValues[sub['model']]"
 																ng-focus="formGeneratorVm.setWithRadio([formControl['model'],column['model']], option['value'])"
 																input-attributes
@@ -644,11 +774,11 @@
 											</span>
 										</label>
 
-										<label for="{{ column['model'] }}_other"
+										<label for="{{ column['model'] + '_' + count  }}_other"
 												ng-class="column['attributes']['class']">
 											<input type="radio"
-													name="{{ column['model'] }}_other"
-													id="{{ column['model'] }}_other"
+													name="{{ column['model'] + '_' + count }}_other"
+													id="{{ column['model'] + '_' + count }}_other"
 													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]['index']"
 													value="{{ column['model'] }}_other"
 													ng-change="formGeneratorVm.setOtherRadio([formControl['model'], column['model'], count], column['model'] + '_other')"
@@ -670,9 +800,15 @@
 
 									<!-- If type is textarea -->
 									<div ng-if="column['type'] == 'textarea'"
-											ng-class="column.container_attributes['class']">
-										<label for="{{ column['model'] }}">
+											ng-class="column.container_attributes['class']" class="field-group">
+										<label for="{{ column['model'] }}" class="field-label">
 											{{ column['label'] }}
+											<span ng-if="column['rules']['required'] != undefined && column['rules']['required'] == 'true' || column['rules']['required'] == true || column['rules']['required'] == 1" class="field-required-icon">
+												*
+											</span>
+											<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo([formControl['model'], column['model'], count])" title="Undo">
+												<span class="glyphicon glyphicon-repeat"></span>
+											</button>
 										</label>
 										<textarea name="{{ column['model'] }}" 
 											id="{{ column['model'] }}" 
@@ -697,9 +833,9 @@
 				</div> <!-- /Tab Loop -->
 			</div> <!-- /Tab Content -->
 			<div class="nav-footer-btns-container">
-				<button type="button" class="btn btn-md btn-primary" ng-click="formGeneratorVm.previous()">&laquo; Previous</button>
-				<button type="button" class="btn btn-md btn-primary pull-right" ng-click="formGeneratorVm.next(formGeneratorVm.template[formGeneratorVm.currentTabIndex - 1])" ng-if="formGeneratorVm.currentTabIndex < formGeneratorVm.template.length">Next &raquo;</button>
-				<button type="submit" class="btn btn-md btn-warning pull-right" ng-if="formGeneratorVm.currentTabIndex == formGeneratorVm.template.length">Submit &raquo;</button>
+				<button type="button" class="btn btn-md btn-primary" ng-click="formGeneratorVm.previous()" ng-if="formGeneratorVm.template['currentTabIndex'] > 1">&laquo; Previous</button>
+				<button type="button" class="btn btn-md btn-primary pull-right" ng-click="formGeneratorVm.next(formGeneratorVm.template[formGeneratorVm.template['currentTabIndex'] - 1])" ng-if="formGeneratorVm.template['currentTabIndex'] < formGeneratorVm.template.length">Next &raquo;</button>
+				<button type="submit" class="btn btn-md btn-warning pull-right" ng-if="formGeneratorVm.template['currentTabIndex'] == formGeneratorVm.template.length">Submit &raquo;</button>
 			</div>
 		</form><!-- /Form -->
 	</div> <!-- /Tabbed form container -->
@@ -988,10 +1124,10 @@
 					<label for="">
 						{{ formControl['label'] }}
 					</label>
-					<button type="button" class="btn btn-xs btn-warning" ng-click="formGeneratorVm.repeaterAddItem(formControl['model'], formControl)">
+					<button ng-if="formControl['count'] < formControl['max']" type="button" class="btn btn-xs btn-warning" ng-click="formGeneratorVm.repeaterAddItem(formControl['model'], formControl)">
 						<span class="glyphicon glyphicon-plus-sign"></span>
 					</button>
-					<button type="button" class="btn btn-xs btn-danger" ng-click="formGeneratorVm.repeaterRemoveItem(formControl['model'], formControl)" ng-if="formControl['count'] >= 1">
+					<button type="button" class="btn btn-xs btn-danger" ng-click="formGeneratorVm.repeaterRemoveItem(formControl['model'], formControl)" ng-if="formControl['count'] > 1">
 						<span class="glyphicon glyphicon-minus-sign"></span>
 					</button>
 
@@ -1012,6 +1148,11 @@
 										ng-class="column['attributes']['class']"
 										placeholder="{{ column['label'] }}" input-attributes
 										custom-attributes="formControl['attributes']">
+								<div class="field-errors-container" ng-if="column['errors'].length > 0">
+									<p ng-repeat="error in column['errors']">
+										{{ error }}
+									</p>
+								</div>
 							</div><!-- If type is text -->
 
 							<!-- If type is select -->

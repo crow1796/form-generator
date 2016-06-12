@@ -20,8 +20,7 @@
 					<form-generator 
 						src="testVm.template"
 						template-model="testVm.templateModel"
-						template-values="testVm.templateValues"
-						submit="testVm.processForm">
+						template-values="testVm.templateValues">
 					</form-generator>
 				</div>
 			</div>

@@ -9,8 +9,7 @@
 			@scope = {
 				src: '=',
 				templateModel: '=',
-				templateValues: '=',
-				submit: '='
+				templateValues: '='
 			}
 			@templateUrl = 'coffee/templates/form-generator.html'
 		link: (scope, element, attrs) ->
