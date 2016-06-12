@@ -59,12 +59,16 @@
 		color: red;
 	}
 
-	.validation-errors-container{
+	.ng-validation-errors-container{
 		margin: 10px 0;
 		padding: 8px;
 		color: red;
 		font-weight: bold;
 		background: rgba(255, 0, 0, 0.05);
+	}
+
+	.ng-validation-errors-container .ng-error-container{
+		padding: 2px;
 	}
 </style>
 <!-- <pre>{{ formGeneratorVm.src | json }}</pre> -->
@@ -92,11 +96,9 @@
 
 			<div class="tab-content">
 				<div ng-repeat="tabbedForm in formGeneratorVm.template"  id="form-tab-content-{{ $index + 1 }}"  class="tab-pane fade in" ng-class="{ active : ($index + 1) == formGeneratorVm.template['currentTabIndex'] }">
-					<div ng-if="formGeneratorVm.errors.length > 0" class="validation-errors-container">
-						<div ng-if="formGeneratorVm.template['displayErrors']">
-							<div ng-repeat="error in formGeneratorVm.errors track by $index" class="error-container">
-								{{ error }}
-							</div>
+					<div ng-if="formGeneratorVm.template['displayErrors'] && formGeneratorVm.errors.length > 0" class="ng-validation-errors-container">
+						<div ng-repeat="error in formGeneratorVm.errors track by $index" class="ng-error-container">
+							{{ error }}
 						</div>
 					</div>
 					<div ng-repeat="formControl in tabbedForm">
@@ -262,7 +264,7 @@
 															id="{{ sub['model'] }}_other"
 															ng-model="formGeneratorVm.templateModel[formControl['model']][sub['model']]['other_value']"
 															ng-focus="formGeneratorVm.setOtherRadio([formControl['model'], sub['model']], sub['model'] + '_other')"
-															placeholder="Other {{ sub['label'] }}">
+															placeholder="Please specify">
 												</label>
 											</div>
 										</span><!-- If type is radio&other (inside radio&other) -->
@@ -379,7 +381,7 @@
 															id="{{ sub['model'] }}_other"
 															ng-model="formGeneratorVm.templateModel[formControl['model']][sub['model']]['other_value']"
 															ng-focus="formGeneratorVm.setOtherRadio([formControl['model'], sub['model']], sub['model'] + '_other')"
-															placeholder="Other {{ sub['label'] }}">
+															placeholder="Please specify">
 												</label>
 											</div>
 										</span><!-- If type is radio&other (inside radio&other) -->
@@ -479,7 +481,7 @@
 															id="{{ sub['model'] }}_other"
 															ng-model="formGeneratorVm.templateModel[formControl['model']][sub['model']]['other_value']"
 															ng-focus="formGeneratorVm.setOtherRadio([formControl['model'], sub['model']], sub['model'] + '_other')"
-															placeholder="Other {{ sub['label'] }}">
+															placeholder="Please specify">
 												</label>
 											</div>
 										</span><!-- If type is radio&other (inside radio&other) -->

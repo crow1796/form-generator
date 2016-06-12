@@ -1,0 +1,60 @@
+.nav-pills{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-pills li{
+    display: inline-block;
+}
+.nav-pills li a{
+    color: #222;
+    display: block;
+    padding: 15px 25px;
+    margin: 5px;
+    text-decoration: none;
+}
+
+.nav-pills li a:hover{
+    background: #efefef;
+}
+
+.nav-pills li.active a{
+    background: blue;
+    color: white;
+}
+
+.tab-pane:not(.active){
+    display: none;
+}
+.field-label{
+    font-weight: bold;
+    display: block;
+    margin-bottom: 3px;
+}
+
+input, select, textarea{
+    font-size: 14px;
+    padding: 9px;
+}
+
+input[type="radio"]{
+    margin: 4px 0;
+    background: red;
+}
+
+.field-group{
+    padding: 6px 0;
+}
+
+.form-radio-other, .form-checkbox{
+    display: block;
+    margin: 5px 0;
+    
+}
+
+.form-control{
+    border-radius: 2px;
+    border: 1px solid rgba(0, 0, 0, .1);
+    width: 50%;
+}

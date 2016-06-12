@@ -11,6 +11,8 @@
 #   - afterPrevious
 #   - beforeNext
 #   - afterNext
+#   - beforeUndo
+#   - afterUndo
 #   - onValidationSuccess
 #   - onValidationFailed
 #   - onSubmit
@@ -34,6 +36,8 @@
 			if @src['afterPrevious'] isnt undefined then @afterPrevious = @src['afterPrevious']
 			if @src['beforeNext'] isnt undefined then @beforeNext = @src['beforeNext']
 			if @src['afterNext'] isnt undefined then @afterNext = @src['afterNext']
+			if @src['beforeUndo'] isnt undefined then @beforeUndo = @src['beforeUndo']
+			if @src['afterUndo'] isnt undefined then @afterUndo = @src['afterUndo']
 			if @src['onValidationSuccess'] isnt undefined then @onValidationSuccess = @src['onValidationSuccess']
 			if @src['onValidationFailed'] isnt undefined then @onValidationFailed = @src['onValidationFailed']
 			if @src['onSubmit'] isnt undefined then @onSubmit = @src['onSubmit']

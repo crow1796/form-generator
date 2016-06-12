@@ -1429,10 +1429,6 @@
         console.log('asdas');
       };
 
-      this.template['displayErrors'] = true;
-      this.template['afterNext'] = function(){
-        
-      };
       this.template['afterNext'] = function(){
         $(function(){
           $('html, body').animate({
@@ -1442,11 +1438,20 @@
       };
 
       this.template['onValidationFailed'] = function(errors){
-        console.log(errors);
         $(function(){
           $('html, body').animate({
             'scrollTop': ($('[name="gen_ng_form"]').offset().top - 50) + 'px'
           });
+          let errorList = '';
+          for(let i = 0; i < errors.length; i++){
+            errorList += '<div>' + errors[i] + '</div>';
+          }
+
+          $('.error-container').html(errorList)
+                                .stop()
+                                .fadeIn('fast')
+                                .delay(3000)
+                                .fadeOut('fast');
         });
       };
       this.template['onSubmit'] = processForm;
@@ -1597,10 +1602,15 @@
 
     function processForm(event, template){
       console.log(template);
+      template['currentTabIndex'] = 1;
+      $('html, body').animate({
+        'scrollTop': ($('[name="gen_ng_form"]').offset().top - 50) + 'px'
+      });
     }
 
-    TestController.prototype.processForm = function(event) {
+    TestController.prototype.processForm = function(event, template) {
       console.log("Submit");
+
     };
 
     TestController.prototype.handleClick = function() {

@@ -46,6 +46,12 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       if (this.src['afterNext'] !== void 0) {
         this.afterNext = this.src['afterNext'];
       }
+      if (this.src['beforeUndo'] !== void 0) {
+        this.beforeUndo = this.src['beforeUndo'];
+      }
+      if (this.src['afterUndo'] !== void 0) {
+        this.afterUndo = this.src['afterUndo'];
+      }
       if (this.src['onValidationSuccess'] !== void 0) {
         this.onValidationSuccess = this.src['onValidationSuccess'];
       }
