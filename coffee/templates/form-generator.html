@@ -287,7 +287,7 @@
 										id="{{ formControl['model'] }}_other"
 										ng-model="formGeneratorVm.templateModel[formControl['model']]['other_value']"
 										ng-focus="formGeneratorVm.setOtherRadio([formControl['model']], formControl['model'] + '_other')"
-										placeholder="Other {{ formControl['label'] }}">
+										placeholder="Please specify">
 							</label>
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
 								<p ng-repeat="error in formControl['errors']">
@@ -791,7 +791,7 @@
 													id="{{ column['model'] }}_other"
 													ng-model="formGeneratorVm.templateModel[formControl['model']][column['model']][count]['other_value']"
 													ng-focus="formGeneratorVm.setOtherRadio([formControl['model'],column['model'], count], column['model'] + '_other')"
-													placeholder="Other {{ column['label'] }}">
+													placeholder="Please specify">
 										</label>
 										<div class="field-errors-container" ng-if="column['errors'].length > 0">
 											<p ng-repeat="error in column['errors']">
@@ -971,7 +971,7 @@
 								id="{{ formControl['model'] }}_other"
 								ng-model="formGeneratorVm.templateModel[formControl['model']]['other_value']"
 								ng-focus="formGeneratorVm.setOtherRadio(formControl['model'])"
-								placeholder="Other {{ formControl['label'] }}">
+								placeholder="Please specify">
 					</label>
 					<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
 						<p ng-repeat="error in formControl['errors']">
@@ -1241,7 +1241,7 @@
 											id="{{ column['model'] }}_other"
 											ng-model="formGeneratorVm.templateModel[column['model']]['other_value']"
 											ng-focus="formGeneratorVm.setOtherRadio(column['model'])"
-											placeholder="Other {{ column['label'] }}">
+											placeholder="Please specify">
 								</label>
 								<div class="field-errors-container" ng-if="column['errors'].length > 0">
 									<p ng-repeat="error in column['errors']">

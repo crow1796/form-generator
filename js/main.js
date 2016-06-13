@@ -18,6 +18,7 @@
                     'Are there Transfer Fees?|transfer_fees|radio|[class:form-radio]|[class:form-group]',
                     'Car Parking|car_parking|checkbox|[class:form-checkbox]|[class:form-group]',
                     'Agreed Commission|agreed_commission|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'How many floors?|floors_count|number|[class:form-control]|[class:form-group]',
                     'Are there any Kick-Backs?|kick_backs|radio&other|[class:form-radio-other]|[class:form-group]',
                 ],
                 [
@@ -40,7 +41,6 @@
                     'Nearest Main Road|nearest_main_road|text|[class:form-control]|[class:form-group]',
                     'Tenure Options|tenure_options|radio|[class:form-radio]|[class:form-group]',
                     'Building Type|building_type|radio|[class:form-radio]|[class:form-group]',
-                    'How many floors?|floors_count|number|[class:form-control]|[class:form-group]',
                     'What is the First Level that Business in Conducted?|first_level_business_conduct|radio&other|[class:form-radio-other]|[class:form-group]',
                     'Approx. Area of each level/floor (m2)|approx_area|repeater[class:form-control]|[class:form-group]',
                     'Stock|stock|radio&other|[class:form-radio-other]|[class:form-group]',
@@ -1448,8 +1448,8 @@
           $('html, body').animate({
             'scrollTop': ($('[name="gen_ng_form"]').offset().top - 50) + 'px'
           });
-          let errorList = '';
-          for(let i = 0; i < errors.length; i++){
+          var errorList = '';
+          for(var i = 0; i < errors.length; i++){
             errorList += '<div>' + errors[i] + '</div>';
           }
 
@@ -1612,6 +1612,7 @@
       $('html, body').animate({
         'scrollTop': ($('[name="gen_ng_form"]').offset().top - 50) + 'px'
       });
+      this.templateModel = []
     }
 
     TestController.prototype.processForm = function(event, template) {

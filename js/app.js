@@ -243,145 +243,6 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
   angular.module('form-generator').controller('formGeneratorController', ['formTemplateService', 'formValidator', '$scope', FormGeneratorController]);
 })(window, document, window.angular);
 
-(function(window, document, angular) {
-  var FormGenerator;
-  FormGenerator = (function() {
-    function FormGenerator(timeout) {
-      this.timeout = timeout;
-      this.controller = 'formGeneratorController';
-      this.controllerAs = 'formGeneratorVm';
-      this.restrict = 'E';
-      this.bindToController = true;
-      this.scope = {
-        src: '=',
-        templateModel: '=',
-        templateValues: '='
-      };
-      this.templateUrl = 'coffee/templates/form-generator.html';
-    }
-
-    FormGenerator.prototype.link = function(scope, element, attrs) {};
-
-    FormGenerator.prototype.fetchFromObject = function(obj, prop) {
-      var _index;
-      if (typeof obj === 'undefined') {
-        return false;
-      }
-      _index = prop.indexOf('.');
-      if (_index > -1) {
-        return this.fetchFromObject(obj[prop.substring(0, _index)], prop.substr(_index + 1));
-      }
-      return obj[prop];
-    };
-
-    return FormGenerator;
-
-  })();
-  angular.module('form-generator').directive('formGenerator', function($timeout) {
-    return new FormGenerator($timeout);
-  });
-})(window, document, window.angular);
-
-var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-(function(window, document, angular) {
-  var InputAttributes;
-  InputAttributes = (function() {
-    function InputAttributes(parse, q, compile) {
-      this.parse = parse;
-      this.q = q;
-      this.compile = compile;
-      this.attributesManager = bind(this.attributesManager, this);
-      this.readFile = bind(this.readFile, this);
-      this.link = bind(this.link, this);
-      this.slice = Array.prototype.slice;
-      this.restrict = 'A';
-      this.require = '?ngModel';
-      this.scope = {
-        customAttributes: '=?',
-        validations: '=?'
-      };
-    }
-
-    InputAttributes.prototype.link = function(scope, element, attrs, ngModel) {
-      if (attrs['type'] !== 'file') {
-        this.attributesManager(scope, element, attrs);
-        return false;
-      }
-      if (!ngModel || attrs['type'] !== 'file') {
-        return;
-      }
-      ngModel.$render = function() {};
-      element.bind('change', (function(_this) {
-        return function(e) {
-          var el;
-          el = e.target;
-          if (!el.value) {
-            return;
-          }
-          el.disabled = true;
-          _this.q.all(_this.slice.call(el.files, 0).map(_this.readFile)).then(function(values) {
-            if (el.multiple) {
-              ngModel.$setViewValue(values);
-            } else {
-              ngModel.$setViewValue(values.length ? values[0] : null);
-            }
-            el.value = null;
-            el.disabled = false;
-          });
-        };
-      })(this));
-    };
-
-    InputAttributes.prototype.readFile = function(file) {
-      var deferred, reader;
-      deferred = this.q.defer();
-      reader = new FileReader();
-      reader.onload = function(e) {
-        deferred.resolve(e.target.result);
-      };
-      reader.onerror = function(e) {
-        deferred.reject(e);
-      };
-      reader.readAsDataURL(file);
-      return deferred.promise;
-    };
-
-    InputAttributes.prototype.attributesManager = function(scope, element, attrs) {
-      var attributeNames, controlAttributes, i, j, k, ref, ref1, splitEvent, supportedEvents;
-      if (scope.customAttributes === void 0) {
-        return;
-      }
-      controlAttributes = scope.customAttributes instanceof Object ? JSON.parse(JSON.stringify(scope.customAttributes)) : null;
-      if (controlAttributes === null) {
-        return;
-      }
-      delete controlAttributes['class'];
-      attributeNames = Object.keys(controlAttributes);
-      supportedEvents = ['click', 'change'];
-      for (i = j = 0, ref = attributeNames.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-        if (supportedEvents.indexOf(attributeNames[i]) === -1) {
-          continue;
-        }
-        splitEvent = controlAttributes[attributeNames[i]].split('.');
-        element.bind(attributeNames[i], scope.$parent.$parent.$parent.$parent.$parent.$parent[splitEvent[0]][splitEvent[1]]);
-        delete controlAttributes[attributeNames[i]];
-      }
-      attributeNames = Object.keys(controlAttributes);
-      for (i = k = 0, ref1 = attributeNames.length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-        element.attr(attributeNames[i], controlAttributes[attributeNames[i]]);
-        this.compile(element);
-      }
-    };
-
-    return InputAttributes;
-
-  })();
-  angular.module('form-generator').directive('inputAttributes', function($parse, $q, $compile) {
-    return new InputAttributes($parse, $q);
-  });
-})(window, document, window.angular);
-
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 (function(window, document, angular) {
@@ -652,4 +513,142 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
   })();
   angular.module('form-generator').service('formValidator', [Validator]);
+})(window, document, window.angular);
+
+(function(window, document, angular) {
+  var FormGenerator;
+  FormGenerator = (function() {
+    function FormGenerator(timeout) {
+      this.timeout = timeout;
+      this.controller = 'formGeneratorController';
+      this.controllerAs = 'formGeneratorVm';
+      this.restrict = 'E';
+      this.bindToController = true;
+      this.scope = {
+        src: '=',
+        templateModel: '=',
+        templateValues: '='
+      };
+      this.templateUrl = 'coffee/templates/form-generator.html';
+    }
+
+    FormGenerator.prototype.link = function(scope, element, attrs) {};
+
+    FormGenerator.prototype.fetchFromObject = function(obj, prop) {
+      var _index;
+      if (typeof obj === 'undefined') {
+        return false;
+      }
+      _index = prop.indexOf('.');
+      if (_index > -1) {
+        return this.fetchFromObject(obj[prop.substring(0, _index)], prop.substr(_index + 1));
+      }
+      return obj[prop];
+    };
+
+    return FormGenerator;
+
+  })();
+  angular.module('form-generator').directive('formGenerator', function($timeout) {
+    return new FormGenerator($timeout);
+  });
+})(window, document, window.angular);
+
+var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+(function(window, document, angular) {
+  var InputAttributes;
+  InputAttributes = (function() {
+    function InputAttributes(parse, q, compile) {
+      this.parse = parse;
+      this.q = q;
+      this.compile = compile;
+      this.attributesManager = bind(this.attributesManager, this);
+      this.readFile = bind(this.readFile, this);
+      this.link = bind(this.link, this);
+      this.slice = Array.prototype.slice;
+      this.restrict = 'A';
+      this.require = '?ngModel';
+      this.scope = {
+        customAttributes: '=?',
+        validations: '=?'
+      };
+    }
+
+    InputAttributes.prototype.link = function(scope, element, attrs, ngModel) {
+      if (attrs['type'] !== 'file') {
+        this.attributesManager(scope, element, attrs);
+        return false;
+      }
+      if (!ngModel || attrs['type'] !== 'file') {
+        return;
+      }
+      ngModel.$render = function() {};
+      element.bind('change', (function(_this) {
+        return function(e) {
+          var el;
+          el = e.target;
+          if (!el.value) {
+            return;
+          }
+          el.disabled = true;
+          _this.q.all(_this.slice.call(el.files, 0).map(_this.readFile)).then(function(values) {
+            if (el.multiple) {
+              ngModel.$setViewValue(values);
+            } else {
+              ngModel.$setViewValue(values.length ? values[0] : null);
+            }
+            el.disabled = false;
+          });
+        };
+      })(this));
+    };
+
+    InputAttributes.prototype.readFile = function(file) {
+      var deferred, reader;
+      deferred = this.q.defer();
+      reader = new FileReader();
+      reader.onload = function(e) {
+        deferred.resolve(e.target.result);
+      };
+      reader.onerror = function(e) {
+        deferred.reject(e);
+      };
+      reader.readAsDataURL(file);
+      return deferred.promise;
+    };
+
+    InputAttributes.prototype.attributesManager = function(scope, element, attrs) {
+      var attributeNames, controlAttributes, i, j, k, ref, ref1, splitEvent, supportedEvents;
+      if (scope.customAttributes === void 0) {
+        return;
+      }
+      controlAttributes = scope.customAttributes instanceof Object ? JSON.parse(JSON.stringify(scope.customAttributes)) : null;
+      if (controlAttributes === null) {
+        return;
+      }
+      delete controlAttributes['class'];
+      attributeNames = Object.keys(controlAttributes);
+      supportedEvents = ['click', 'change'];
+      for (i = j = 0, ref = attributeNames.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        if (supportedEvents.indexOf(attributeNames[i]) === -1) {
+          continue;
+        }
+        splitEvent = controlAttributes[attributeNames[i]].split('.');
+        element.bind(attributeNames[i], scope.$parent.$parent.$parent.$parent.$parent.$parent[splitEvent[0]][splitEvent[1]]);
+        delete controlAttributes[attributeNames[i]];
+      }
+      attributeNames = Object.keys(controlAttributes);
+      for (i = k = 0, ref1 = attributeNames.length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+        element.attr(attributeNames[i], controlAttributes[attributeNames[i]]);
+        this.compile(element);
+      }
+    };
+
+    return InputAttributes;
+
+  })();
+  angular.module('form-generator').directive('inputAttributes', function($parse, $q, $compile) {
+    return new InputAttributes($parse, $q);
+  });
 })(window, document, window.angular);

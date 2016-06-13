@@ -27,7 +27,6 @@
 			                ngModel.$setViewValue(values)
 			            else
 			                ngModel.$setViewValue(if values.length then values[0] else null)
-			            el.value = null
 			            el.disabled = no
 			            return
 			    return
