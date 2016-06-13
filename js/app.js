@@ -4,14 +4,13 @@
 
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-(function(window, document, $, angular) {
+(function(window, document, angular) {
   var FormGeneratorController;
   FormGeneratorController = (function() {
-    function FormGeneratorController(formTemplateService, scope) {
+    function FormGeneratorController(formTemplateService, formValidator, scope) {
       this.formTemplateService = formTemplateService;
+      this.formValidator = formValidator;
       this.scope = scope;
-      this.validateSubControls = bind(this.validateSubControls, this);
-      this.validate = bind(this.validate, this);
       this.undo = bind(this.undo, this);
       this.next = bind(this.next, this);
       this.sendForm = bind(this.sendForm, this);
@@ -71,7 +70,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       event.preventDefault();
       this.errors = [];
       controls = this.template[this.template.length - 1];
-      this.errors = this.validate(controls);
+      this.errors = this.formValidator.validate(controls, this);
       if (!this.errors) {
         if (_.has(this, 'onValidationSuccess')) {
           this.onValidationSuccess();
@@ -106,7 +105,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       }
       this.errors = [];
       if (this.template['currentTabIndex'] < this.template.length) {
-        this.errors = this.validate(controls);
+        this.errors = this.formValidator.validate(controls, this);
         if (!this.errors) {
           if (_.has(this, 'onValidationSuccess')) {
             this.onValidationSuccess();
@@ -238,101 +237,13 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       }
     };
 
-    FormGeneratorController.prototype.validate = function(controls) {
-      var hasErrors, hasSubErrors;
-      if (_.has(this, 'beforeValidation')) {
-        this.beforeValidation();
-      }
-      hasErrors = [];
-      hasSubErrors = [];
-      controls.map((function(_this) {
-        return function(control) {
-          var controlIndex, i, j, k, ref, ref1, ruleNames;
-          control['errors'] = [];
-          if (control['rules'] === void 0) {
-            return;
-          }
-          controlIndex = _this.template[_this.template['currentTabIndex'] - 1].findIndex(function(element, index) {
-            return element['model'] === control['model'];
-          });
-          _this.template[_this.template['currentTabIndex'] - 1][controlIndex]['errors'] = [];
-          ruleNames = Object.keys(control['rules']);
-          for (i = j = 0, ref = ruleNames.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-            if (ruleNames[i] === 'required' && (control['rules']['required'] > 0 || control['rules']['required'] === 'true')) {
-              if (_this.templateModel[control['model']] === void 0 || _this.templateModel[control['model']] === '' || _this.templateModel[control['model']] === null) {
-                _this.template[_this.template['currentTabIndex'] - 1][controlIndex]['errors'].push(control['label'] + ' field is required.');
-                hasErrors.push(control['label'] + ' field is required.');
-              }
-            } else if (ruleNames[i] === 'min') {
-              if (_this.templateModel[control['model']] === void 0) {
-                return;
-              }
-              if (_this.templateModel[control['model']].length < control['rules']['min']) {
-                _this.template[_this.template['currentTabIndex'] - 1][controlIndex]['errors'].push(control['label'] + " must not be less than " + control['rules']['min'] + " characters.");
-                hasErrors.push(control['label'] + " must not be less than " + control['rules']['min'] + " characters.");
-              }
-            } else if (ruleNames[i] === 'max') {
-              if (_this.templateModel[control['model']] === void 0) {
-                return;
-              }
-              if (_this.templateModel[control['model']].length > control['rules']['max']) {
-                _this.template[_this.template['currentTabIndex'] - 1][controlIndex]['errors'].push(control['label'] + " must not be more than " + control['rules']['max'] + " characters.");
-                hasErrors.push(control['label'] + " must not be more than " + control['rules']['max'] + " characters.");
-              }
-            }
-          }
-          if (control['type'] === 'repeater') {
-            hasSubErrors = _this.validateSubControls(control);
-          }
-          for (i = k = 0, ref1 = hasSubErrors.length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
-            hasErrors.push(hasSubErrors[i]);
-          }
-        };
-      })(this));
-      if (hasErrors.length !== 0) {
-        return hasErrors;
-      } else {
-        return false;
-      }
-    };
-
-    FormGeneratorController.prototype.validateSubControls = function(parentControl) {
-      var controls, hasErrors;
-      hasErrors = [];
-      controls = this.templateValues[parentControl['model']];
-      controls.map((function(_this) {
-        return function(control) {
-          var controlIndex, count, i, j, k, ref, ref1, ruleNames;
-          if (control['rules'] === void 0) {
-            return;
-          }
-          control['errors'] = [];
-          controlIndex = _this.templateValues[parentControl['model']].findIndex(function(element, index) {
-            return element['model'] === control['model'];
-          });
-          ruleNames = Object.keys(control['rules']);
-          for (i = j = 0, ref = ruleNames.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-            for (count = k = 0, ref1 = parentControl['count']; 0 <= ref1 ? k < ref1 : k > ref1; count = 0 <= ref1 ? ++k : --k) {
-              if (ruleNames[i] === 'required' && (control['rules']['required'] > 0 || control['rules']['required'] === 'true')) {
-                if (_.get(_this.templateModel, parentControl['model']) === void 0 || _.get(_this.templateModel, "[" + parentControl['model'] + "][" + control['model'] + "][" + count + "]") === void 0 || _.get(_this.templateModel, "[" + parentControl['model'] + "][" + control['model'] + "][" + count + "]") === '' || _.get(_this.templateModel, "[" + parentControl['model'] + "][" + control['model'] + "][" + count + "]") === null) {
-                  control['errors'].push(control['label'] + ' field is required.');
-                  hasErrors.push(control['label'] + ' field is required.');
-                }
-              }
-            }
-          }
-        };
-      })(this));
-      return hasErrors;
-    };
-
     return FormGeneratorController;
 
   })();
-  angular.module('form-generator').controller('formGeneratorController', ['formTemplateService', '$scope', FormGeneratorController]);
-})(window, document, window.jQuery, window.angular);
+  angular.module('form-generator').controller('formGeneratorController', ['formTemplateService', 'formValidator', '$scope', FormGeneratorController]);
+})(window, document, window.angular);
 
-(function(window, document, $, angular) {
+(function(window, document, angular) {
   var FormGenerator;
   FormGenerator = (function() {
     function FormGenerator(timeout) {
@@ -369,11 +280,11 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
   angular.module('form-generator').directive('formGenerator', function($timeout) {
     return new FormGenerator($timeout);
   });
-})(window, document, window.jQuery, window.angular);
+})(window, document, window.angular);
 
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-(function(window, document, $, angular) {
+(function(window, document, angular) {
   var InputAttributes;
   InputAttributes = (function() {
     function InputAttributes(parse, q, compile) {
@@ -469,11 +380,11 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
   angular.module('form-generator').directive('inputAttributes', function($parse, $q, $compile) {
     return new InputAttributes($parse, $q);
   });
-})(window, document, window.jQuery, window.angular);
+})(window, document, window.angular);
 
 var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-(function(window, document, $, angular) {
+(function(window, document, angular) {
   var FormTemplateService;
   FormTemplateService = (function() {
     function FormTemplateService() {
@@ -606,4 +517,135 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
   })();
   angular.module('form-generator').service('formTemplateService', [FormTemplateService]);
-})(window, document, $, angular);
+})(window, document, angular);
+
+var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+(function(window, document, angular) {
+  var Validator;
+  Validator = (function() {
+    function Validator() {
+      this.checkControlRules = bind(this.checkControlRules, this);
+      this.validateRepeaterControls = bind(this.validateRepeaterControls, this);
+      this.validate = bind(this.validate, this);
+    }
+
+    Validator.prototype.validate = function(controls, controller) {
+      var errors, subErrors;
+      if (_.has(controller, 'beforeValidation')) {
+        controller.beforeValidation();
+      }
+      errors = [];
+      subErrors = [];
+      controls.map((function(_this) {
+        return function(control) {
+          var controlIndex, i, j, k, l, ref, ref1, ref2, ruleNames;
+          control['errors'] = [];
+          if (control['rules'] === void 0) {
+            if (control['type'] === 'repeater') {
+              subErrors = _this.validateRepeaterControls(control, controller);
+              for (i = j = 0, ref = subErrors.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+                errors.push(subErrors[i]);
+              }
+            }
+            return;
+          }
+          controlIndex = controller.template[controller.template['currentTabIndex'] - 1].findIndex(function(element, index) {
+            return element['model'] === control['model'];
+          });
+          controller.template[controller.template['currentTabIndex'] - 1][controlIndex]['errors'] = [];
+          ruleNames = Object.keys(control['rules']);
+          for (i = k = 0, ref1 = ruleNames.length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
+            errors.push(_this.checkControlRules(ruleNames[i], control, controller.templateModel[control['model']], controller.template[controller.template['currentTabIndex'] - 1][controlIndex]['errors']));
+          }
+          if (control['type'] === 'repeater') {
+            subErrors = _this.validateRepeaterControls(control, controller);
+          }
+          for (i = l = 0, ref2 = subErrors.length; 0 <= ref2 ? l < ref2 : l > ref2; i = 0 <= ref2 ? ++l : --l) {
+            errors.push(subErrors[i]);
+          }
+        };
+      })(this));
+      errors = this.filterErrors(errors);
+      if (errors.length !== 0) {
+        return errors;
+      } else {
+        return false;
+      }
+    };
+
+    Validator.prototype.validateRepeaterControls = function(parentControl, controller) {
+      var controls, errors;
+      errors = [];
+      controls = controller.templateValues[parentControl['model']];
+      controls.map((function(_this) {
+        return function(control) {
+          var controlIndex, count, i, j, k, ref, ref1, ruleNames;
+          if (control['rules'] === void 0) {
+            return;
+          }
+          control['errors'] = [];
+          controlIndex = controller.templateValues[parentControl['model']].findIndex(function(element, index) {
+            return element['model'] === control['model'];
+          });
+          ruleNames = Object.keys(control['rules']);
+          for (i = j = 0, ref = ruleNames.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+            for (count = k = 0, ref1 = parentControl['count']; 0 <= ref1 ? k < ref1 : k > ref1; count = 0 <= ref1 ? ++k : --k) {
+              errors.push(_this.checkControlRules(ruleNames[i], control, _.get(controller.templateModel, "[" + parentControl['model'] + "][" + control['model'] + "][" + count + "]"), control['errors']));
+            }
+          }
+        };
+      })(this));
+      errors = this.filterErrors(errors);
+      return errors;
+    };
+
+    Validator.prototype.checkControlRules = function(rule, control, model, controlErrors) {
+      if (rule === 'required' && (control['rules']['required'] > 0 || control['rules']['required'] === 'true')) {
+        if (model === void 0 || model === '' || model === null) {
+          controlErrors.push(control['label'] + ' field is required.');
+          return control['label'] + ' field is required.';
+        }
+      } else if (rule === 'min') {
+        if (model === void 0) {
+          return;
+        }
+        if (model.length < control['rules']['min']) {
+          controlErrors.push(control['label'] + " must not be less than " + control['rules']['min'] + " characters.");
+          return control['label'] + " must not be less than " + control['rules']['min'] + " characters.";
+        }
+      } else if (rule === 'max') {
+        if (model === void 0) {
+          return;
+        }
+        if (model.length > control['rules']['max']) {
+          controlErrors.push(control['label'] + " must not be more than " + control['rules']['max'] + " characters.");
+          return control['label'] + " must not be more than " + control['rules']['max'] + " characters.";
+        }
+      }
+      return '';
+    };
+
+    Validator.prototype.filterErrors = function(errors) {
+      var i, j, ref;
+      for (i = j = 0, ref = errors.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        if (errors.indexOf('') > -1) {
+          errors.splice(errors.indexOf(''), 1);
+        }
+        if (errors.indexOf(void 0) > -1) {
+          errors.splice(errors.indexOf(void 0), 1);
+        }
+      }
+      errors = this.removeErrorDuplicates(errors);
+      return errors;
+    };
+
+    Validator.prototype.removeErrorDuplicates = function(errors) {
+      return errors;
+    };
+
+    return Validator;
+
+  })();
+  angular.module('form-generator').service('formValidator', [Validator]);
+})(window, document, window.angular);

@@ -1,4 +1,4 @@
-((window, document, $, angular) ->
+((window, document, angular) ->
 
 	class FormGenerator
 		constructor: (@timeout) ->
@@ -32,4 +32,4 @@
 				new FormGenerator($timeout)
 
 	return
-)(window, document, window.jQuery, window.angular)
+)(window, document, window.angular)

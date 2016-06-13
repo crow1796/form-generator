@@ -1,4 +1,4 @@
-((window, document, $, angular) ->
+((window, document, angular) ->
 
 	class InputAttributes 
 		constructor: (@parse, @q, @compile) ->
@@ -74,4 +74,4 @@
 				new InputAttributes($parse, $q)
 
 	return
-)(window, document, window.jQuery, window.angular)
+)(window, document, window.angular)

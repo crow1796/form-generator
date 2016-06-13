@@ -1,4 +1,4 @@
-((window, document, $, angular) ->
+((window, document, angular) ->
 	class FormTemplateService
 		constructor: ->
 			@template = []
@@ -116,4 +116,4 @@
 	angular.module 'form-generator'
 			.service 'formTemplateService', [FormTemplateService]
 	return
-)(window, document, $, angular)
+)(window, document, angular)

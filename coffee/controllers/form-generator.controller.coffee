@@ -18,9 +18,9 @@
 #   - onSubmit
 #   - onAfterSubmit
 ####################################
-((window, document, $, angular) ->
+((window, document, angular) ->
 	class FormGeneratorController
-		constructor: (@formTemplateService, @scope) ->
+		constructor: (@formTemplateService, @formValidator, @scope) ->
 			@converter = @formTemplateService.convertSource(@src, @templateValues)
 			@template = @converter.getTemplate()
 			@formType = @converter.getFormType()
@@ -47,7 +47,7 @@
 			event.preventDefault()
 			@errors = []
 			controls = @template[@template.length - 1]
-			@errors = @validate(controls)
+			@errors = @formValidator.validate(controls, @)
 			if !@errors
 				if _.has(@, 'onValidationSuccess') then @onValidationSuccess()
 				if _.has(@, 'onSubmit') then @onSubmit(event, @template)
@@ -68,7 +68,7 @@
 			# validate(@template['currentTabIndex'])
 			if @template['currentTabIndex'] < @template.length
 				# If validation has no errors
-				@errors = @validate(controls)
+				@errors = @formValidator.validate(controls, @)
 				if !@errors
 					if _.has(@, 'onValidationSuccess') then @onValidationSuccess()
 					@template['currentTabIndex'] = @template['currentTabIndex'] + 1
@@ -154,64 +154,8 @@
 			if _.get(@templateModel, model)['status'] is false
 				_.unset(@templateModel, model)
 			return
-		validate: (controls) =>
-			if _.has(@, 'beforeValidation') then @beforeValidation()
-			hasErrors = []
-			hasSubErrors = []
-			controls.map((control) =>
-				control['errors'] = []
-				return if control['rules'] is undefined
-				controlIndex = @template[@template['currentTabIndex'] - 1].findIndex((element, index) ->
-					element['model'] is control['model']
-					)
-				@template[@template['currentTabIndex'] - 1][controlIndex]['errors'] = []
-				ruleNames = Object.keys(control['rules'])
-				for i in [0...ruleNames.length]
-					if ruleNames[i] is 'required' and (control['rules']['required'] > 0 or control['rules']['required'] is 'true')
-						if @templateModel[control['model']] is undefined or @templateModel[control['model']] is '' or @templateModel[control['model']] is null
-							@template[@template['currentTabIndex'] - 1][controlIndex]['errors'].push(control['label'] + ' field is required.')
-							hasErrors.push(control['label'] + ' field is required.')
-					else if ruleNames[i] is 'min'
-						return if @templateModel[control['model']] is undefined
-						if @templateModel[control['model']].length < control['rules']['min']
-							@template[@template['currentTabIndex'] - 1][controlIndex]['errors'].push("#{control['label']} must not be less than #{control['rules']['min']} characters.")
-							hasErrors.push("#{control['label']} must not be less than #{control['rules']['min']} characters.")
-					else if ruleNames[i] is 'max'
-						return if @templateModel[control['model']] is undefined
-						if @templateModel[control['model']].length > control['rules']['max']
-							@template[@template['currentTabIndex'] - 1][controlIndex]['errors'].push("#{control['label']} must not be more than #{control['rules']['max']} characters.")
-							hasErrors.push("#{control['label']} must not be more than #{control['rules']['max']} characters.")
-
-				hasSubErrors = @validateSubControls(control) if control['type'] is 'repeater'
-				for i in [0...hasSubErrors.length]
-					hasErrors.push(hasSubErrors[i])
-				return
-				)
-			# Return validation results
-			if hasErrors.length isnt 0 then hasErrors else no
-		validateSubControls: (parentControl) =>
-			hasErrors = []
-			controls = @templateValues[parentControl['model']]
-			controls.map((control) => 
-				return if control['rules'] is undefined
-				control['errors'] = []
-				controlIndex = @templateValues[parentControl['model']].findIndex((element, index) ->
-					element['model'] is control['model']
-					)
-				ruleNames = Object.keys(control['rules'])
-				for i in [0...ruleNames.length]
-					for count in [0...parentControl['count']]
-						if ruleNames[i] is 'required' and (control['rules']['required'] > 0 or control['rules']['required'] is 'true')
-							if _.get(@templateModel, parentControl['model']) is undefined or _.get(@templateModel, "[#{parentControl['model']}][#{control['model']}][#{count}]") is undefined or _.get(@templateModel, "[#{parentControl['model']}][#{control['model']}][#{count}]") is '' or _.get(@templateModel, "[#{parentControl['model']}][#{control['model']}][#{count}]") is null
-								# console.log "[#{parentControl['model']}][#{control['model']}][#{count}]", @templateModel[parentControl['model']]
-								control['errors'].push(control['label'] + ' field is required.')
-								# console.log(control['errors']);
-								hasErrors.push(control['label'] + ' field is required.')
-				return
-				)
-			hasErrors
 
 	angular.module 'form-generator'
-			.controller 'formGeneratorController', ['formTemplateService', '$scope', FormGeneratorController]
+			.controller 'formGeneratorController', ['formTemplateService', 'formValidator', '$scope', FormGeneratorController]
 	return
-)(window, document, window.jQuery, window.angular)
+)(window, document, window.angular)

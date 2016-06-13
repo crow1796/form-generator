@@ -103,7 +103,7 @@
                     'Listing Terms and Conditions|listing_terms_conditions|checkbox|[class:form-checkbox]|[class:form-group]'
                 ],
                 [
-                    'Advertisement / Post Heading|advertisement_post_heading|text|[class:form-control]|[class:form-group]',
+                    'Advertisement / Post Heading|advertisement_post_heading|text|[class:form-control]|[class:form-group]|[required:true]',
                     'Agent\'s Comments|agents_comment|textarea|[class:form-control]|[class:form-group]',
                     'More Information|more_information|textarea|[class:form-control]|[class:form-group]',
                     'Featured Image|featured_image|file&preview|[class:form-control]|[class:form-group]',
@@ -122,6 +122,9 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
+                  },
+                  'rules': {
+                    'required': 'true'
                   }
               },
               {
@@ -133,6 +136,9 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
+                  },
+                  'rules': {
+                    'required': 'true'
                   }
               },
               {
