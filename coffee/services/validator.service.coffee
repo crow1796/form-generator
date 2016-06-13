@@ -72,7 +72,10 @@
 			errors = @removeErrorDuplicates(errors)
 			errors
 		removeErrorDuplicates: (errors) ->
-			errors
+			uniqueErrors = errors.filter((item, pos) ->
+				return errors.indexOf(item) == pos
+				)
+			uniqueErrors
 
 	angular.module 'form-generator'
 			.service 'formValidator', [Validator]

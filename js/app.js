@@ -641,7 +641,11 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     Validator.prototype.removeErrorDuplicates = function(errors) {
-      return errors;
+      var uniqueErrors;
+      uniqueErrors = errors.filter(function(item, pos) {
+        return errors.indexOf(item) === pos;
+      });
+      return uniqueErrors;
     };
 
     return Validator;
