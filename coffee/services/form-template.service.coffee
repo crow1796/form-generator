@@ -59,15 +59,28 @@
 			@tmpControl['model'] = control[1]
 			@tmpControl['type'] = control[2]
 
+			if @tmpControl['type'] is 'repeater'
+				@tmpControl['count'] = 1
+
 			if @tmpControl['type'].indexOf('repeater') > -1 and @tmpControl['type'].indexOf(':') > -1
 				tmpRepeater = @tmpControl['type'].split(':')
 				if tmpRepeater[0] is 'repeater'
-					@tmpControl['count'] = 1
+					@tmpControl['count'] = if tmpRepeater[1] isnt undefined then parseInt tmpRepeater[1] else 1
 					@tmpControl['type'] = tmpRepeater[0]
-					@tmpControl['max'] = parseInt tmpRepeater[1]
-
-			if @tmpControl['type'] is 'repeater'
-				@tmpControl['count'] = 1
+					@tmpControl['max'] = if tmpRepeater[2] isnt undefined then parseInt tmpRepeater[2]
+			else if @tmpControl['type'].indexOf('number') > -1 and @tmpControl['type'].indexOf(':') > -1
+				tmpNumber = @tmpControl['type'].split(':');
+				if tmpNumber[0] is 'number'
+					@tmpControl['type'] = tmpNumber[0]
+					@tmpControl['min_value'] = if tmpNumber[1] isnt undefined then parseInt tmpNumber[1]
+					@tmpControl['max_digits'] = if tmpNumber[2] isnt undefined then parseInt tmpNumber[2]
+					@tmpControl['max_value'] = if tmpNumber[3] isnt undefined then parseInt tmpNumber[3]
+			else if @tmpControl['type'].indexOf('text') > -1 and @tmpControl['type'].indexOf(':') > -1
+				tmpNumber = @tmpControl['type'].split(':');
+				if tmpNumber[0] is 'text'
+					@tmpControl['type'] = tmpNumber[0]
+					@tmpControl['sub_type'] = if tmpNumber[1] isnt undefined then tmpNumber[1]
+					@tmpControl['currency_prefix'] = if tmpNumber[2] isnt undefined then tmpNumber[2]
 
 			# Set control's attributes
 			@checkAndSetAttributesFor(control[3], 'attributes')

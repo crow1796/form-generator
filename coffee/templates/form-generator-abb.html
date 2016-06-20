@@ -12,27 +12,19 @@
 
 	.file-preview{
 		width: 30%;
-		height: 120px;
-		max-height: 120px;
+		height: auto;
 		background: black;
 		margin-top: 10px;
 		padding: 5px;
 		border-radius: 5px;
 		float: left;
 		margin: 5px;
-		position: relative;
 	}
 
 	.file-preview img{
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
-	}
-
-	.remove-image-btn{
-		position: absolute;
-		left: 4px;
-		top: 4px;
 	}
 
 	.field-errors-container{
@@ -618,9 +610,6 @@
 							<div class="file-preview-container" ng-if="formGeneratorVm.templateModel[formControl['model']]">
 								<div class="file-preview" ng-repeat="image in formGeneratorVm.templateModel[formControl['model']] track by $index">
 									<img ng-src="{{image}}">
-									<button class="btn btn-xs btn-danger remove-image-btn" title="Remove Image" ng-click="formGeneratorVm.removePreview(formControl['model'], $index)">
-										&times;
-									</button>
 								</div>
 							</div>
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">

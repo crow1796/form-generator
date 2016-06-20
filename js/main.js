@@ -7,14 +7,16 @@
       this.templateModel = {};
       this.template = [
                 [
-                    // 'First Name|first_name|text|[class:form-control]|[class:form-group]',
-                    // 'Surname|surname|text|[class:form-control]|[class:form-group]',
-                    // 'Nickname|nickname|text|[class:form-control]|[class:form-group]',
-                    // 'Phone Number|phone_number|text|[class:form-control]|[class:form-group]',
-                    // 'Email|email|email|[class:form-control]|[class:form-group]',
-                    // 'Relationship to the Listing|listing_relationship|text|[class:form-control]|[class:form-group]',
-                    // 'ID Information|id_information|text|[class:form-control]|[class:form-group]',
-                    'Contacts|listing_contacts|repeater:3|[class:form-control]|[class:form-group listing-contacts-container]',
+                    '%If Sole Owner, input owner\'s details first|[class:legend]',
+                    'First Name|first_name|number:1:5:2016|[class:form-control]|[class:form-group]',
+                    'Surname|surname|text|[class:form-control]|[class:form-group]',
+                    'Nickname|nickname|text:currency|[class:form-control]|[class:form-group]',
+                    'Phone Number|phone_number|text|[class:form-control]|[class:form-group]',
+                    'Email|email|text|[class:form-control]|[class:form-group]|[email:true]',
+                    'Relationship to the Listing|listing_relationship|select|[class:form-control]|[class:form-group]',
+                    'ID Information|id_information|radio&other|[class:form-radio-other]|[class:form-group]',
+                    
+                    'Contacts|listing_contacts|repeater:1:3|[class:form-control]|[class:form-group listing-contacts-container]',
                     'Are there Transfer Fees?|transfer_fees|radio|[class:form-radio]|[class:form-group]',
                     'Car Parking|car_parking|checkbox|[class:form-checkbox]|[class:form-group]',
                     'Agreed Commission|agreed_commission|radio&other|[class:form-radio-other]|[class:form-group]',
@@ -22,7 +24,7 @@
                     'Are there any Kick-Backs?|kick_backs|radio&other|[class:form-radio-other]|[class:form-group]',
                 ],
                 [
-                    'Listing Date|listing_date|date|[class:form-control jq-datepick]|[class:form-group]',
+                    'Listing Date|listing_date|repeater:1:1|[class:form-control jq-datepick]|[class:form-group]',
                     'Business / Listing Name|listing_name|text|[class:form-control]|[class:form-group]|[required:true@min:2]',
                     'Main Business Category|main_business_category|select|[class:form-control]|[class:form-group]',
                     'Main Business Type|main_business_type|select|[class:form-control]|[class:form-group]',
@@ -112,20 +114,71 @@
             ];
 
       this.templateValues = {
+        'listing_date_day': [
+          {
+            'value': 1,
+            'label': 1
+          }
+        ],
+        'listing_date_month': [
+          {
+            'value': 'January',
+            'label': 'January'
+          }
+        ],
+        'listing_date_year': [
+          {
+            'value': 2016,
+            'label': 2016
+          }
+        ],
+        'listing_date': [
+          {
+            'model': 'listing_date_day',
+            'type': 'select',
+            'label': 'Day',
+            'attributes': {
+              'class': 'form-control'
+            },
+            'container_attributes': {
+              'class': 'form-group'
+            }
+          },
+          {
+            'model': 'listing_date_month',
+            'type': 'select',
+            'label': 'Month',
+            'attributes': {
+              'class': 'form-control'
+            },
+            'container_attributes': {
+              'class': 'form-group'
+            }
+          },
+          {
+            'model': 'listing_date_year',
+            'type': 'select',
+            'label': 'Year',
+            'attributes': {
+              'class': 'form-control'
+            },
+            'container_attributes': {
+              'class': 'form-group'
+            }
+          }
+        ],
           'listing_contacts': [
               {
                   'label': 'First Name',
                   'model': 'first_name',
-                  'type': 'text',
+                  'type': 'number',
                   'attributes': {
                       'class': 'form-control'
                   },
                   'container_attributes': {
                       'class': 'form-group'
                   },
-                  'rules': {
-                    'required': 'true'
-                  }
+                  'min_value': 0
               },
               {
                   'label': 'Surname',
@@ -136,9 +189,6 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  },
-                  'rules': {
-                    'required': 'true'
                   }
               },
               {
@@ -315,13 +365,16 @@
                       {
                         'label': 'First Traded',
                         'model': 'currently_opt_first_traded',
-                        'type': 'select',
+                        'type': 'number',
                         'attributes': {
                             'class': 'form-radio'
                         },
                         'container_attributes': {
                             'class': 'form-group'
-                        }
+                        },
+                        'min_value': 0,
+                        'max_digits': 4,
+                        'max_value': 2016
                     },{
                         'label': 'What Month?',
                         'model': 'currently_opt_what_month',
@@ -513,7 +566,7 @@
           ],
           'approx_area': [
               {
-                  'type': 'text',
+                  'type': 'number',
                   'model': 'level',
                   'label': 'Level',
                   'attributes': {
@@ -521,7 +574,8 @@
                   },
                   'container_attributes': {
                       'class': 'form-group'
-                  }
+                  },
+                  'min_value': 0
               },
               {
                   'type': 'text',
@@ -1432,7 +1486,14 @@
       };
 
       this.template['load'] = function(){
-        console.log('asdas');
+        $(function(){
+          $('#listing_relationship').on('change', function(){
+            console.log($(this).val());
+            if($(this).val() == 'Owner'){
+              $('#email').fadeOut('fast');
+            } 
+          });
+        });
       };
 
       this.template['afterNext'] = function(){
@@ -1442,7 +1503,7 @@
           });
         });
       };
-
+      this.template['editMode'] = true;
       this.template['onValidationFailed'] = function(errors){
         $(function(){
           $('html, body').animate({
@@ -1461,153 +1522,10 @@
         });
       };
       this.template['onSubmit'] = processForm;
-      // this.template = [
-      //       'First Name|first_name|text|[class:form-control]|[class:form-group]', 
-      //       'Middle Name|middle_name|text|[class:form-control]|[class:form-group]', 
-      //       'Last Name|last_name|text|[class:form-control]|[class:form-group]', 
-      //       'Profile Picture|profile_picture|file&preview|[class:form-control]|[class:form-group]', 
-      //       'Repeater|repeater|repeater:3|[class:form-repeater]|[class:form-group]', 
-      //       'Click ME!|click_me|button|[class:btn btn-default btn-md]|[class:form-group]'
-      // ];
-      // this.templateValues = {
-      //   'month': [
-      //     {
-      //       'value': 1,
-      //       'label': 'January'
-      //     }, {
-      //       'value': 2,
-      //       'label': 'February'
-      //     }
-      //   ],
-      //   'day': [
-      //     {
-      //       'value': 1,
-      //       'label': 'One'
-      //     }, {
-      //       'value': 2,
-      //       'label': 'Two'
-      //     }
-      //   ],
-      //   'year': [
-      //     {
-      //       'value': 1996,
-      //       'label': '1996'
-      //     }, {
-      //       'value': 1997,
-      //       'label': '1997'
-      //     }
-      //   ],
-      //   'choice': [
-      //     {
-      //       'value': 1,
-      //       'label': 'Lorem'
-      //     }, {
-      //       'value': 2,
-      //       'label': 'Ipsum'
-      //     }, {
-      //       'value': 3,
-      //       'label': 'Dolor'
-      //     }
-      //   ],
-      //   'hobbies': [
-      //     {
-      //       'value': 'lorem_ipsum',
-      //       'label': 'Lorem Ipsum'
-      //     }, {
-      //       'value': 'dolor_sit',
-      //       'label': 'Dolor sit'
-      //     }, {
-      //       'value': 'amet_consecteutor',
-      //       'label': 'Amet Consecteutor'
-      //     }
-      //   ],
-      //   'gender': [
-      //     {
-      //       'value': 'male',
-      //       'label': 'Male'
-      //     }, {
-      //       'value': 'female',
-      //       'label': 'Female'
-      //     }
-      //   ],
-      //   'repeater': [
-      //     {
-      //       'label': 'Title',
-      //       'model': 'title',
-      //       'type': 'text',
-      //       'attributes': {
-      //         'class': 'form-control'
-      //       },
-      //       'container_attributes': {
-      //         'class': 'form-group'
-      //       }
-      //     }, {
-      //       'label': 'Number',
-      //       'model': 'number',
-      //       'type': 'number',
-      //       'attributes': {
-      //         'class': 'form-control'
-      //       },
-      //       'container_attributes': {
-      //         'class': 'form-group'
-      //       }
-      //     }, {
-      //       'label': 'Teexxt',
-      //       'model': 'teexxt',
-      //       'type': 'text',
-      //       'attributes': {
-      //         'class': 'form-control'
-      //       },
-      //       'container_attributes': {
-      //         'class': 'form-group'
-      //       }
-      //     }, {
-      //       'label': 'Text-ting!',
-      //       'model': 'text_ting',
-      //       'type': 'text',
-      //       'attributes': {
-      //         'class': 'form-control'
-      //       },
-      //       'container_attributes': {
-      //         'class': 'form-group'
-      //       }
-      //     }, {
-      //       'label': 'Text-ting!',
-      //       'model': 'text_ting',
-      //       'type': 'text',
-      //       'attributes': {
-      //         'class': 'form-control'
-      //       },
-      //       'container_attributes': {
-      //         'class': 'form-group'
-      //       }
-      //     }, {
-      //       'label': 'Text-ting!',
-      //       'model': 'text_ting',
-      //       'type': 'text',
-      //       'attributes': {
-      //         'class': 'form-control'
-      //       },
-      //       'container_attributes': {
-      //         'class': 'form-group'
-      //       }
-      //     }, {
-      //       'label': 'Text-ting!',
-      //       'model': 'text_ting',
-      //       'type': 'text',
-      //       'attributes': {
-      //         'class': 'form-control'
-      //       },
-      //       'container_attributes': {
-      //         'class': 'form-group'
-      //       }
-      //     }
-      //   ]
-      // };
     }
 
     function processForm(event, template){
-      console.log(template);
+      console.log(this.templateModel);
       template['currentTabIndex'] = 1;
       $('html, body').animate({
         'scrollTop': ($('[name="gen_ng_form"]').offset().top - 50) + 'px'

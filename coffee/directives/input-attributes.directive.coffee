@@ -21,7 +21,8 @@
 			    return if !el.value
 
 			    el.disabled = yes
-			    @q.all(@slice.call(el.files, 0).map(@readFile))
+			    files = Array.prototype.slice.call el.files, 0, 10
+			    @q.all(@slice.call(files, 0).map(@readFile))
 			        .then (values) ->
 			            if el.multiple
 			                ngModel.$setViewValue(values)

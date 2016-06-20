@@ -20,17 +20,21 @@
 ####################################
 ((window, document, angular) ->
 	class FormGeneratorController
-		constructor: (@formTemplateService, @formValidator, @scope) ->
+		constructor: (@formTemplateService, @formValidator, @scope, @filter) ->
 			@converter = @formTemplateService.convertSource(@src, @templateValues)
 			@template = @converter.getTemplate()
 			@formType = @converter.getFormType()
 			@registerEvents()
 			@template['currentTabIndex'] = 1
 			@clickedTabs = [@template['currentTabIndex']];
+			if @template['editMode'] is on
+				for i in [0...@template.length]
+					@clickedTabs.push(i + 1)
 			@errors = []
 			if _.has(@, 'load') then @load()
 		registerEvents: ->
 			if @src['displayErrors'] isnt undefined then @template['displayErrors'] = @src['displayErrors']
+			if @src['editMode'] isnt undefined then @template['editMode'] = @src['editMode']
 			if @src['load'] isnt undefined then @load = @src['load']
 			if @src['beforePrevious'] isnt undefined then @beforePrevious = @src['beforePrevious']
 			if @src['afterPrevious'] isnt undefined then @afterPrevious = @src['afterPrevious']
@@ -55,12 +59,57 @@
 			else
 				if _.has(@, 'onValidationFailed') then @onValidationFailed(@errors)
 			return
+		removePreview: (model, index) ->
+			@templateModel[model].splice(index, 1)
+			return
+		watchControl: (control, model) =>
+			return if !_.has(@templateModel, model) or _.get(@templateModel, model) is null
+			model = if model instanceof Array then model.join('.') else model
+			if control['type'] is 'number'
+				if control['min_value'] isnt undefined
+					minVal = parseInt control['min_value']
+					if _.get(@templateModel, model) < minVal
+						_.set(@templateModel, model, minVal)
+				if control['max_digits'] isnt undefined
+					maxDigits = parseInt control['max_digits']
+					if _.get(@templateModel, model) and (_.get(@templateModel, model)).toString().length > maxDigits
+						value = ((_.get(@templateModel, model)).toString()).substring(0, maxDigits)
+						_.set(@templateModel, model, parseInt(value))
+				if control['max_value'] isnt undefined
+					maxVal = parseInt control['max_value']
+					if _.get(@templateModel, model) > maxVal
+						_.set(@templateModel, model, maxVal)
+			if control['type'] is 'text'
+				if control['sub_type'] isnt undefined and control['sub_type'] is 'currency'
+					value = (_.get(@templateModel, model)).replace(/,|\./g, '')
+					newValue = @filter('currency')(value, '', 0)
+					_.set(@templateModel, model, newValue)
+					# if /([^\d|,|\.{1}])/g.test _.get(@templateModel, model)
+					# 	value = ((_.get(@templateModel, model)).toString()).substring(0, ((_.get(@templateModel, model)).toString()).length - 1)
+					# 	_.set(@templateModel, model, value)
+					# else if /[^\d|,|\.{1}]/g.test _.get(@templateModel, model) or _.get(@templateModel, model) is ''
+					# 	return off
+					# # newValue = (_.get(@templateModel, model)).replace(/(\d)(?=(\d{3})+)/g, '$1,')
+					# value = (_.get(@templateModel, model)).replace(/,/g, '')
+					# if value.indexOf('.') > -1
+					# 	decimal = (/^\D*(\d+(\.\d+)?)/g.exec(value))[2]
+					# value = (parseFloat (value).replace(/[^\d]/g, ''))
+					# newValue = value.toLocaleString()
+					# _.set(@templateModel, model, (_.get(@templateModel, model)).replace(/[^\d]/g,'').replace(/(\d\d?)$/,'.$1'))
+			return
 		handleOtherInput: (model) ->
 			model = model + '_other'
 			return
-		changeCurrentTabIndex: (event, index) ->
+		changeCurrentTabIndex: (event, index, controls) ->
 			event.preventDefault()
-			if @clickedTabs.indexOf(index + 1) > -1 then @template['currentTabIndex'] = (index + 1)
+			if(index >= @template['currentTabIndex']) then @errors = @formValidator.validate(controls, @) else @errors = null
+			if !@errors
+				if _.has(@, 'onValidationSuccess') then @onValidationSuccess()
+				if @clickedTabs.indexOf(index + 1) > -1 then @template['currentTabIndex'] = (index + 1)
+				if _.has(@, 'afterNext') then @afterNext()
+			else
+				if _.has(@, 'onValidationFailed') then @onValidationFailed(@errors)
+			
 			return
 		next: (controls) =>
 			if _.has(@, 'beforeNext') then @beforeNext()
@@ -81,13 +130,15 @@
 			if _.has(@, 'beforePrevious') then @beforePrevious()
 			if @template['currentTabIndex'] > 1
 				@template['currentTabIndex'] = @template['currentTabIndex'] - 1
+				@errors = []
 				if _.has(@, 'afterPrevious') then @afterPrevious()
 			return
-		undo: (model) =>
+		undo: (model, control) =>
 			if model instanceof Array
 				model = model.join('.')
-
-			_.unset(this.templateModel, model)
+			if _.has(@, 'beforeUndo') then @beforeUndo(model, control)
+			_.unset(@templateModel, model)
+			if _.has(@, 'afterUndo') then @afterUndo(model, control)
 			return
 		range: (min, max, step) ->
 			step = step || 1
@@ -156,6 +207,6 @@
 			return
 
 	angular.module 'form-generator'
-			.controller 'formGeneratorController', ['formTemplateService', 'formValidator', '$scope', FormGeneratorController]
+			.controller 'formGeneratorController', ['formTemplateService', 'formValidator', '$scope', '$filter', FormGeneratorController]
 	return
 )(window, document, window.angular)

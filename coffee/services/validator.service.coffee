@@ -22,6 +22,7 @@
 				for i in [0...ruleNames.length]
 					errors.push(@checkControlRules(ruleNames[i], control, controller.templateModel[control['model']], controller.template[controller.template['currentTabIndex'] - 1][controlIndex]['errors']))
 
+				# Validate repeater's controls
 				subErrors = @validateRepeaterControls(control, controller) if control['type'] is 'repeater'
 				for i in [0...subErrors.length]
 					errors.push(subErrors[i])
@@ -62,6 +63,12 @@
 				if model.length > control['rules']['max']
 					controlErrors.push("#{control['label']} must not be more than #{control['rules']['max']} characters.")
 					return "#{control['label']} must not be more than #{control['rules']['max']} characters."
+			else if rule is 'email' and (control['rules']['email'] > 0 or control['rules']['email'] is 'true')
+				return if model is undefined
+				emailValidator = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm
+				if !emailValidator.test(model)
+					controlErrors.push("#{control['label']} must be a valid email address.")
+					return "#{control['label']} must be a valid email address."
 			return ''
 		filterErrors: (errors) ->
 			for i in [0...errors.length]
