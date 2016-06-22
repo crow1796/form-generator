@@ -42,6 +42,7 @@
 			if @src['afterNext'] isnt undefined then @afterNext = @src['afterNext']
 			if @src['beforeUndo'] isnt undefined then @beforeUndo = @src['beforeUndo']
 			if @src['afterUndo'] isnt undefined then @afterUndo = @src['afterUndo']
+			if @src['afterPreviewRemoved'] isnt undefined then @afterPreviewRemoved = @src['afterPreviewRemoved']
 			if @src['onValidationSuccess'] isnt undefined then @onValidationSuccess = @src['onValidationSuccess']
 			if @src['onValidationFailed'] isnt undefined then @onValidationFailed = @src['onValidationFailed']
 			if @src['onSubmit'] isnt undefined then @onSubmit = @src['onSubmit']
@@ -61,6 +62,7 @@
 			return
 		removePreview: (model, index) ->
 			@templateModel[model].splice(index, 1)
+			if _.has(@, 'afterPreviewRemoved') then @afterPreviewRemoved(model, index, @template)
 			return
 		watchControl: (control, model) =>
 			return if !_.has(@templateModel, model) or _.get(@templateModel, model) is null
@@ -138,6 +140,7 @@
 				model = model.join('.')
 			if _.has(@, 'beforeUndo') then @beforeUndo(model, control)
 			_.unset(@templateModel, model)
+			_.unset(control, 'errors')
 			if _.has(@, 'afterUndo') then @afterUndo(model, control)
 			return
 		range: (min, max, step) ->

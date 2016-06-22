@@ -108,8 +108,8 @@
                     'Advertisement / Post Heading|advertisement_post_heading|text|[class:form-control]|[class:form-group]|[required:true]',
                     'Agent\'s Comments|agents_comment|textarea|[class:form-control]|[class:form-group]',
                     'More Information|more_information|textarea|[class:form-control]|[class:form-group]',
-                    'Featured Image|featured_image|file&preview|[class:form-control]|[class:form-group]',
-                    'Gallery Images|galley_images|files&preview|[class:form-control]|[class:form-group]'
+                    'Featured Image|featured_image|file&preview|[class:form-control]|[class:form-group]|[dimension:848,440]',
+                    'Gallery Images|galley_images|files&preview|[class:form-control]|[class:form-group]|[dimension:848,440]'
                 ]
             ];
 
@@ -1494,6 +1494,13 @@
             } 
           });
         });
+      };
+
+      this.template['afterPreviewRemoved'] = function(model, index, template){
+          if(model == 'galley_images'){
+            delete document.getElementById('galley_images').files[index];
+            document.getElementById('galley_images').files.length = document.getElementById('galley_images').files.length - 1;
+          }
       };
 
       this.template['afterNext'] = function(){

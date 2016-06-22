@@ -1,7 +1,7 @@
 ((window, document, angular) ->
 
 	class Validator
-		constructor: ->
+		constructor: () ->
 		validate: (controls, controller) =>
 			if _.has(controller, 'beforeValidation') then controller.beforeValidation()
 			errors = []
@@ -69,7 +69,31 @@
 				if !emailValidator.test(model)
 					controlErrors.push("#{control['label']} must be a valid email address.")
 					return "#{control['label']} must be a valid email address."
+			else if rule is 'dimension'
+				return if model is undefined
+				dimension = (control['rules']['dimension']).split(',')
+				width = dimension[0]
+				height = dimension[1]
+				if model instanceof Array
+					for i in [0...model.length]
+						imageError = @validateDimension(model[i], width, height, control['label'])
+						if imageError isnt undefined
+							controlErrors.push imageError
+							return imageError
+						
+				else
+					imageError = @validateDimension(model, width, height, control['label'])
+					console.log imageError
+					if imageError isnt undefined
+						controlErrors.push imageError
+						return imageError
 			return ''
+		validateDimension: (model, width, height, label) ->
+			image = new Image()
+			image.src = model
+			if image.width > width or image.height > height
+				return "#{label} must be less than or equal to " + width + "px width and less than or equal to " + height + "px height."
+			return
 		filterErrors: (errors) ->
 			for i in [0...errors.length]
 				if errors.indexOf('') > -1

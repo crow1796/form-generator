@@ -62,6 +62,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       if (this.src['afterUndo'] !== void 0) {
         this.afterUndo = this.src['afterUndo'];
       }
+      if (this.src['afterPreviewRemoved'] !== void 0) {
+        this.afterPreviewRemoved = this.src['afterPreviewRemoved'];
+      }
       if (this.src['onValidationSuccess'] !== void 0) {
         this.onValidationSuccess = this.src['onValidationSuccess'];
       }
@@ -101,6 +104,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
     FormGeneratorController.prototype.removePreview = function(model, index) {
       this.templateModel[model].splice(index, 1);
+      if (_.has(this, 'afterPreviewRemoved')) {
+        this.afterPreviewRemoved(model, index, this.template);
+      }
     };
 
     FormGeneratorController.prototype.watchControl = function(control, model) {
@@ -214,6 +220,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         this.beforeUndo(model, control);
       }
       _.unset(this.templateModel, model);
+      _.unset(control, 'errors');
       if (_.has(this, 'afterUndo')) {
         this.afterUndo(model, control);
       }
@@ -691,7 +698,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     Validator.prototype.checkControlRules = function(rule, control, model, controlErrors) {
-      var emailValidator;
+      var dimension, emailValidator, height, i, imageError, j, ref, width;
       if (rule === 'required' && (control['rules']['required'] > 0 || control['rules']['required'] === 'true')) {
         if (model === void 0 || model === '' || model === null) {
           controlErrors.push(control['label'] + ' field is required.');
@@ -722,8 +729,40 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
           controlErrors.push(control['label'] + " must be a valid email address.");
           return control['label'] + " must be a valid email address.";
         }
+      } else if (rule === 'dimension') {
+        if (model === void 0) {
+          return;
+        }
+        dimension = control['rules']['dimension'].split(',');
+        width = dimension[0];
+        height = dimension[1];
+        if (model instanceof Array) {
+          for (i = j = 0, ref = model.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+            imageError = this.validateDimension(model[i], width, height, control['label']);
+            if (imageError !== void 0) {
+              controlErrors.push(imageError);
+              return imageError;
+            }
+          }
+        } else {
+          imageError = this.validateDimension(model, width, height, control['label']);
+          console.log(imageError);
+          if (imageError !== void 0) {
+            controlErrors.push(imageError);
+            return imageError;
+          }
+        }
       }
       return '';
+    };
+
+    Validator.prototype.validateDimension = function(model, width, height, label) {
+      var image;
+      image = new Image();
+      image.src = model;
+      if (image.width > width || image.height > height) {
+        return (label + " must be less than or equal to ") + width + "px width and less than or equal to " + height + "px height.";
+      }
     };
 
     Validator.prototype.filterErrors = function(errors) {
