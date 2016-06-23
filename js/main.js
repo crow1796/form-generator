@@ -7,16 +7,15 @@
       this.templateModel = {};
       this.template = [
                 [
-                    '%If Sole Owner, input owner\'s details first|[class:legend]',
-                    'First Name|first_name|number:1:5:2016|[class:form-control]|[class:form-group]',
-                    'Surname|surname|text|[class:form-control]|[class:form-group]',
-                    'Nickname|nickname|text:currency|[class:form-control]|[class:form-group]',
-                    'Phone Number|phone_number|text|[class:form-control]|[class:form-group]',
-                    'Email|email|text|[class:form-control]|[class:form-group]|[email:true]',
-                    'Relationship to the Listing|listing_relationship|select|[class:form-control]|[class:form-group]',
-                    'ID Information|id_information|radio&other|[class:form-radio-other]|[class:form-group]',
-                    
-                    'Contacts|listing_contacts|repeater:1:3|[class:form-control]|[class:form-group listing-contacts-container]',
+                    // '%If Sole Owner, input owner\'s details first|[class:legend]',
+                    // 'First Name|first_name|number:1:5:2016|[class:form-control]|[class:form-group]',
+                    // 'Surname|surname|text|[class:form-control]|[class:form-group]',
+                    // 'Nickname|nickname|text:currency|[class:form-control]|[class:form-group]',
+                    // 'Phone Number|phone_number|text:tel|[class:form-control]|[class:form-group]',
+                    // 'Email|email|text|[class:form-control]|[class:form-group]|[email:true]',
+                    // 'Relationship to the Listing|listing_relationship|select|[class:form-control]|[class:form-group]',
+                    // 'ID Information|id_information|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Contacts|listing_contacts|repeater:1:4|[class:form-control]|[class:form-group listing-contacts-container]|[required:1@children[first_name:required:1@surname:required:1]]',
                     'Are there Transfer Fees?|transfer_fees|radio|[class:form-radio]|[class:form-group]',
                     'Car Parking|car_parking|checkbox|[class:form-checkbox]|[class:form-group]',
                     'Agreed Commission|agreed_commission|radio&other|[class:form-radio-other]|[class:form-group]',
@@ -31,7 +30,7 @@
                     'Secondary Business Category|secondary_business_category|checkbox|[class:form-checkbox]|[class:form-group half-col]',
                     'Secondary Business Type|secondary_business_type|checkbox|[class:form-checkbox]|[class:form-group half-col]',
                     'Listing Type|listing_type|radio|[class:form-radio]|[class:form-group clear]',
-                    'Currently Operational?|currently_operational|radio&other|[class:form-radio-other]|[class:form-group]',
+                    'Currently Operational?|currently_operational|radio&other|[class:form-radio-other]|[class:form-group]|[required:true]',
                     'Address Line 1|address_line1|text|[class:form-control]|[class:form-group]',
                     'Address Line 2|address_line2|text|[class:form-control]|[class:form-group]',
                     'Country|country|select|[class:form-control]|[class:form-group clear-both]',
@@ -108,7 +107,7 @@
                     'Advertisement / Post Heading|advertisement_post_heading|text|[class:form-control]|[class:form-group]|[required:true]',
                     'Agent\'s Comments|agents_comment|textarea|[class:form-control]|[class:form-group]',
                     'More Information|more_information|textarea|[class:form-control]|[class:form-group]',
-                    'Featured Image|featured_image|file&preview|[class:form-control]|[class:form-group]|[dimension:848,440]',
+                    'Featured Image|featured_image|file&preview|[class:form-control]|[class:form-group]|[required:true@dimension:848,440]',
                     'Gallery Images|galley_images|files&preview|[class:form-control]|[class:form-group]|[dimension:848,440]'
                 ]
             ];
@@ -1485,7 +1484,8 @@
           ]
       };
 
-      this.template['load'] = function(){
+      this.template['load'] = function(template){
+        console.log(template);
         $(function(){
           $('#listing_relationship').on('change', function(){
             console.log($(this).val());

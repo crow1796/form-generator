@@ -31,7 +31,7 @@
 				for i in [0...@template.length]
 					@clickedTabs.push(i + 1)
 			@errors = []
-			if _.has(@, 'load') then @load()
+			if _.has(@, 'load') then @load(@template)
 		registerEvents: ->
 			if @src['displayErrors'] isnt undefined then @template['displayErrors'] = @src['displayErrors']
 			if @src['editMode'] isnt undefined then @template['editMode'] = @src['editMode']
@@ -98,6 +98,12 @@
 					# value = (parseFloat (value).replace(/[^\d]/g, ''))
 					# newValue = value.toLocaleString()
 					# _.set(@templateModel, model, (_.get(@templateModel, model)).replace(/[^\d]/g,'').replace(/(\d\d?)$/,'.$1'))
+			if control['type'] is 'text'
+				if control['sub_type'] isnt undefined and control['sub_type'] is 'tel'
+					value = (_.get(@templateModel, model))
+					hasLetter = /[^\d|\+|(|)|\s|\-|\.]/g.test value
+					if hasLetter is yes
+						_.set(@templateModel, model, value.substring 0, value.length - 1)
 			return
 		handleOtherInput: (model) ->
 			model = model + '_other'

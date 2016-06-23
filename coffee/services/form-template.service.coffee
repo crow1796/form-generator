@@ -85,9 +85,9 @@
 			# Set control's attributes
 			@checkAndSetAttributesFor(control[3], 'attributes')
 			@checkAndSetAttributesFor(control[4], 'container_attributes')
-			@checkAndSetAttributesFor(control[5], 'rules')
+			@checkAndSetAttributesFor(control[5], 'rules', control[1])
 			return
-		setAttributes: (property) ->
+		setAttributes: (property, optionalControl) ->
 			(value) =>
 				# Split attributes name and value by ':'
 				attributeValue = value.split(':')
@@ -98,14 +98,30 @@
 			@walkTabs(src)
 			@
 
-		checkAndSetAttributesFor: (control, property) ->
+		checkAndSetAttributesFor: (control, property, model) ->
 			if control isnt undefined
 				@tmpControl[property] = {}
 				# Remove first '@'
 				attributes = control.substring(1, (control.length - 1))
-				# Split attributes by '@'
-				splitAttributes = attributes.split('@')
-				splitAttributes.map(@setAttributes(property))
+				# console.log control, attributes.indexOf 'children' isnt -1
+				if /children/g.test attributes
+					childAttributes = (/\[([\w\W]+)\]/g.exec attributes)
+					return if childAttributes is null or childAttributes is undefined
+					childrenRules = childAttributes[1]
+					splitAttributes = childrenRules.split('@')
+					for i in [0...splitAttributes.length]
+						childControlModel = splitAttributes[i].split(':')[0]
+						childRules = splitAttributes[i].replace "#{childControlModel}:", ''
+						childRules = [childRules]
+						childControl = _.find(_.get(@templateValues, "#{model}"), {'model': childControlModel})
+						for x in [0...childRules.length]
+							splitAttr = childRules[x].split(':')
+							_.set(childControl, "#{property}.#{splitAttr[0]}", splitAttr[1])
+						# childRules.map(@setAttributes(property, childControl))
+				if !/children/g.test attributes
+					# Split attributes by '@'
+					splitAttributes = attributes.split('@')
+					splitAttributes.map(@setAttributes(property))
 			return
 
 		resetTmpControl: ->

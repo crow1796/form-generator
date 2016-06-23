@@ -30,7 +30,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       }
       this.errors = [];
       if (_.has(this, 'load')) {
-        this.load();
+        this.load(this.template);
       }
     }
 
@@ -110,7 +110,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     FormGeneratorController.prototype.watchControl = function(control, model) {
-      var maxDigits, maxVal, minVal, newValue, value;
+      var hasLetter, maxDigits, maxVal, minVal, newValue, value;
       if (!_.has(this.templateModel, model) || _.get(this.templateModel, model) === null) {
         return;
       }
@@ -141,6 +141,15 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
           value = (_.get(this.templateModel, model)).replace(/,|\./g, '');
           newValue = this.filter('currency')(value, '', 0);
           _.set(this.templateModel, model, newValue);
+        }
+      }
+      if (control['type'] === 'text') {
+        if (control['sub_type'] !== void 0 && control['sub_type'] === 'tel') {
+          value = _.get(this.templateModel, model);
+          hasLetter = /[^\d|\+|(|)|\s|\-|\.]/g.test(value);
+          if (hasLetter === true) {
+            _.set(this.templateModel, model, value.substring(0, value.length - 1));
+          }
         }
       }
     };
@@ -557,10 +566,10 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       }
       this.checkAndSetAttributesFor(control[3], 'attributes');
       this.checkAndSetAttributesFor(control[4], 'container_attributes');
-      this.checkAndSetAttributesFor(control[5], 'rules');
+      this.checkAndSetAttributesFor(control[5], 'rules', control[1]);
     };
 
-    FormTemplateService.prototype.setAttributes = function(property) {
+    FormTemplateService.prototype.setAttributes = function(property, optionalControl) {
       return (function(_this) {
         return function(value) {
           var attributeValue;
@@ -575,13 +584,35 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       return this;
     };
 
-    FormTemplateService.prototype.checkAndSetAttributesFor = function(control, property) {
-      var attributes, splitAttributes;
+    FormTemplateService.prototype.checkAndSetAttributesFor = function(control, property, model) {
+      var attributes, childAttributes, childControl, childControlModel, childRules, childrenRules, i, j, k, ref, ref1, splitAttr, splitAttributes, x;
       if (control !== void 0) {
         this.tmpControl[property] = {};
         attributes = control.substring(1, control.length - 1);
-        splitAttributes = attributes.split('@');
-        splitAttributes.map(this.setAttributes(property));
+        if (/children/g.test(attributes)) {
+          childAttributes = /\[([\w\W]+)\]/g.exec(attributes);
+          if (childAttributes === null || childAttributes === void 0) {
+            return;
+          }
+          childrenRules = childAttributes[1];
+          splitAttributes = childrenRules.split('@');
+          for (i = j = 0, ref = splitAttributes.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+            childControlModel = splitAttributes[i].split(':')[0];
+            childRules = splitAttributes[i].replace(childControlModel + ":", '');
+            childRules = [childRules];
+            childControl = _.find(_.get(this.templateValues, "" + model), {
+              'model': childControlModel
+            });
+            for (x = k = 0, ref1 = childRules.length; 0 <= ref1 ? k < ref1 : k > ref1; x = 0 <= ref1 ? ++k : --k) {
+              splitAttr = childRules[x].split(':');
+              _.set(childControl, property + "." + splitAttr[0], splitAttr[1]);
+            }
+          }
+        }
+        if (!/children/g.test(attributes)) {
+          splitAttributes = attributes.split('@');
+          splitAttributes.map(this.setAttributes(property));
+        }
       }
     };
 
@@ -675,6 +706,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       var controls, errors;
       errors = [];
       controls = controller.templateValues[parentControl['model']];
+      console.log(controls);
       controls.map((function(_this) {
         return function(control) {
           var controlIndex, count, i, j, k, ref, ref1, ruleNames;
@@ -698,27 +730,30 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     };
 
     Validator.prototype.checkControlRules = function(rule, control, model, controlErrors) {
-      var dimension, emailValidator, height, i, imageError, j, ref, width;
+      var dimension, emailValidator, height, i, imageError, j, label, ref, width;
       if (rule === 'required' && (control['rules']['required'] > 0 || control['rules']['required'] === 'true')) {
         if (model === void 0 || model === '' || model === null) {
-          controlErrors.push(control['label'] + ' field is required.');
-          return control['label'] + ' field is required.';
+          label = control['label'].replace(/[^\w\s]+/g, '');
+          controlErrors.push(label + ' field is required.');
+          return label + ' field is required.';
         }
       } else if (rule === 'min') {
         if (model === void 0) {
           return;
         }
         if (model.length < control['rules']['min']) {
-          controlErrors.push(control['label'] + " must not be less than " + control['rules']['min'] + " characters.");
-          return control['label'] + " must not be less than " + control['rules']['min'] + " characters.";
+          label = control['label'].replace(/[^\w\s]+/g, '');
+          controlErrors.push(label + " must not be less than " + control['rules']['min'] + " characters.");
+          return label + " must not be less than " + control['rules']['min'] + " characters.";
         }
       } else if (rule === 'max') {
         if (model === void 0) {
           return;
         }
         if (model.length > control['rules']['max']) {
-          controlErrors.push(control['label'] + " must not be more than " + control['rules']['max'] + " characters.");
-          return control['label'] + " must not be more than " + control['rules']['max'] + " characters.";
+          label = control['label'].replace(/[^\w\s]+/g, '');
+          controlErrors.push(label + " must not be more than " + control['rules']['max'] + " characters.");
+          return label + " must not be more than " + control['rules']['max'] + " characters.";
         }
       } else if (rule === 'email' && (control['rules']['email'] > 0 || control['rules']['email'] === 'true')) {
         if (model === void 0) {
@@ -726,8 +761,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         }
         emailValidator = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm;
         if (!emailValidator.test(model)) {
-          controlErrors.push(control['label'] + " must be a valid email address.");
-          return control['label'] + " must be a valid email address.";
+          label = control['label'].replace(/[^\w\s]+/g, '');
+          controlErrors.push(label + " must be a valid email address.");
+          return label + " must be a valid email address.";
         }
       } else if (rule === 'dimension') {
         if (model === void 0) {
@@ -736,17 +772,17 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         dimension = control['rules']['dimension'].split(',');
         width = dimension[0];
         height = dimension[1];
+        label = control['label'].replace(/[^\w\s]+/g, '');
         if (model instanceof Array) {
           for (i = j = 0, ref = model.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-            imageError = this.validateDimension(model[i], width, height, control['label']);
+            imageError = this.validateDimension(model[i], width, height, label);
             if (imageError !== void 0) {
               controlErrors.push(imageError);
               return imageError;
             }
           }
         } else {
-          imageError = this.validateDimension(model, width, height, control['label']);
-          console.log(imageError);
+          imageError = this.validateDimension(model, width, height, label);
           if (imageError !== void 0) {
             controlErrors.push(imageError);
             return imageError;
