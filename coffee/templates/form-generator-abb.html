@@ -70,6 +70,10 @@
 	.ng-validation-errors-container .ng-error-container{
 		padding: 2px;
 	}
+
+	.input-type-file{
+		display: none;
+	}
 </style>
 <!-- <pre>{{ formGeneratorVm.src | json }}</pre> -->
 <!-- <hr> -->
@@ -567,10 +571,14 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<label for="{{ formControl['model'] }}" class="file-input-trigger-button">
+								Upload File(s)
+							</label>
 							<input type="file" 
 									name="{{ formControl['model'] }}"
 									id="{{ formControl['model'] }}"
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
+									class="input-type-file"
 									ng-class="formControl['attributes']['class']"
 									input-attributes
 									custom-attributes="formControl['attributes']">
@@ -599,10 +607,14 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<label for="{{ formControl['model'] }}" class="file-input-trigger-button">
+								Upload File(s)
+							</label>
 							<input type="file" 
 									name="{{ formControl['model'] }}"
 									id="{{ formControl['model'] }}"
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
+									class="input-type-file"
 									ng-class="formControl['attributes']['class']"
 									multiple
 									input-attributes

@@ -87,7 +87,7 @@
 			@checkAndSetAttributesFor(control[4], 'container_attributes')
 			@checkAndSetAttributesFor(control[5], 'rules', control[1])
 			return
-		setAttributes: (property, optionalControl) ->
+		setAttributes: (property) ->
 			(value) =>
 				# Split attributes name and value by ':'
 				attributeValue = value.split(':')
@@ -117,7 +117,9 @@
 						for x in [0...childRules.length]
 							splitAttr = childRules[x].split(':')
 							_.set(childControl, "#{property}.#{splitAttr[0]}", splitAttr[1])
-						# childRules.map(@setAttributes(property, childControl))
+					attributes = attributes.replace(/@?children\[{1}.*\]{1}/g, '')
+					splitAttributes = attributes.split('@')
+					splitAttributes.map(@setAttributes(property))
 				if !/children/g.test attributes
 					# Split attributes by '@'
 					splitAttributes = attributes.split('@')

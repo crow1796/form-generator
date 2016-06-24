@@ -23,7 +23,7 @@
                     'Are there any Kick-Backs?|kick_backs|radio&other|[class:form-radio-other]|[class:form-group]',
                 ],
                 [
-                    'Listing Date|listing_date|repeater:1:1|[class:form-control jq-datepick]|[class:form-group]',
+                    'Listing Date|listing_date|repeater:1:1|[class:form-control jq-datepick]|[class:form-group]|[required:1@children[first_name:required:true]]',
                     'Business / Listing Name|listing_name|text|[class:form-control]|[class:form-group]|[required:true@min:2]',
                     'Main Business Category|main_business_category|select|[class:form-control]|[class:form-group]',
                     'Main Business Type|main_business_type|select|[class:form-control]|[class:form-group]',

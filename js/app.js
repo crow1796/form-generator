@@ -99,10 +99,12 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         if (_.has(this, 'onValidationFailed')) {
           this.onValidationFailed(this.errors);
         }
+        return false;
       }
     };
 
-    FormGeneratorController.prototype.removePreview = function(model, index) {
+    FormGeneratorController.prototype.removePreview = function(event, model, index) {
+      event.preventDefault();
       this.templateModel[model].splice(index, 1);
       if (_.has(this, 'afterPreviewRemoved')) {
         this.afterPreviewRemoved(model, index, this.template);
@@ -411,7 +413,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
             return;
           }
           el.disabled = true;
-          files = Array.prototype.slice.call(el.files, 0, 10);
+          files = Array.prototype.slice.call(el.files, 0, 9);
           _this.q.all(_this.slice.call(files, 0).map(_this.readFile)).then(function(values) {
             if (el.multiple) {
               ngModel.$setViewValue(values);
@@ -569,7 +571,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       this.checkAndSetAttributesFor(control[5], 'rules', control[1]);
     };
 
-    FormTemplateService.prototype.setAttributes = function(property, optionalControl) {
+    FormTemplateService.prototype.setAttributes = function(property) {
       return (function(_this) {
         return function(value) {
           var attributeValue;
@@ -608,6 +610,9 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
               _.set(childControl, property + "." + splitAttr[0], splitAttr[1]);
             }
           }
+          attributes = attributes.replace(/@?children\[{1}.*\]{1}/g, '');
+          splitAttributes = attributes.split('@');
+          splitAttributes.map(this.setAttributes(property));
         }
         if (!/children/g.test(attributes)) {
           splitAttributes = attributes.split('@');

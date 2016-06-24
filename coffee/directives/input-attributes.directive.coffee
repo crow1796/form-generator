@@ -21,7 +21,7 @@
 			    return if !el.value
 
 			    el.disabled = yes
-			    files = Array.prototype.slice.call el.files, 0, 10
+			    files = Array.prototype.slice.call el.files, 0, 9
 			    @q.all(@slice.call(files, 0).map(@readFile))
 			        .then (values) ->
 			            if el.multiple

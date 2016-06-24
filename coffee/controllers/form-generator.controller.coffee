@@ -59,8 +59,10 @@
 				if _.has(@, 'onAfterSubmit') then @onAfterSubmit()
 			else
 				if _.has(@, 'onValidationFailed') then @onValidationFailed(@errors)
+				return off
 			return
-		removePreview: (model, index) ->
+		removePreview: (event, model, index) ->
+			event.preventDefault()
 			@templateModel[model].splice(index, 1)
 			if _.has(@, 'afterPreviewRemoved') then @afterPreviewRemoved(model, index, @template)
 			return

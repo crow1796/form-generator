@@ -58,7 +58,7 @@
 		display: inline !important;
 	}
 
-	.repeater-group:hover > .undo-button{
+	.repeater-group:hover > .repeater-header > .undo-button{
 		display: inline !important;	
 	}
 
@@ -81,6 +81,29 @@
 
 	.ng-validation-errors-container .ng-error-container{
 		padding: 2px;
+	}
+
+	.input-type-file{
+		display: none !important;
+	}
+
+	.file-input-trigger-button{
+		display: block;
+		width: 150px;
+		padding: 10px;
+		background: #EC633F;
+		text-align: center;
+		border-radius: 6px;
+		color: white;
+		cursor: pointer;
+	}
+	
+	.file-input-trigger-button:hover{
+		background: #FF904D;
+	}
+
+	.field-errors-container{
+		clear: both;
 	}
 </style>
 <!-- <pre>{{ formGeneratorVm.src | json }}</pre> -->
@@ -137,6 +160,11 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
+
 							<input type="{{formControl['type']}}" 
 									name="{{formControl['model']}}"
 									id="{{formControl['model']}}"
@@ -164,6 +192,9 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
 							<select name="{{formControl['model']}}"
 									id="{{formControl['model']}}"
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
@@ -205,6 +236,9 @@
 										<span class="glyphicon glyphicon-repeat"></span>
 									</button>
 								</label>
+								<div ng-if="formControl['container_attributes']['description']" class="field-description">
+									{{ formControl['container_attributes']['description'] }}
+								</div>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 									ng-class="formControl['attributes']['class']"
 									input-attributes
@@ -324,6 +358,9 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 										ng-class="formControl['attributes']['class']"
 										input-attributes
@@ -424,6 +461,9 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
 							<label ng-repeat="option in formGeneratorVm.templateValues[formControl['model']]"
 										ng-class="formControl['attributes']['class']"
 										input-attributes
@@ -525,6 +565,9 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
 							<input type="{{ formControl['type'] }}" 
 									name="{{ formControl['model'] }}"
 									id="{{ formControl['model'] }}"
@@ -551,6 +594,9 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
 							<input type="file" 
 									name="{{ formControl['model'] }}"
 									id="{{ formControl['model'] }}"
@@ -558,6 +604,7 @@
 									ng-class="formControl['attributes']['class']"
 									multiple
 									input-attributes
+									accept="{{ formControl['attributes']['accept'] ? formControl['attributes']['accept'] : '*' }}"
 									custom-attributes="formControl['attributes']">
 							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
 								<p ng-repeat="error in formControl['errors']">
@@ -579,12 +626,20 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
+							<label for="{{ formControl['model'] }}" class="file-input-trigger-button">
+								Upload File(s)
+							</label>
 							<input type="file" 
 									name="{{ formControl['model'] }}"
 									id="{{ formControl['model'] }}"
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
+									class="input-type-file"
 									ng-class="formControl['attributes']['class']"
 									input-attributes
+									accept="{{ formControl['attributes']['accept'] ? formControl['attributes']['accept'] : '*' }}"
 									custom-attributes="formControl['attributes']">
 							<div class="file-preview-container" ng-if="formGeneratorVm.templateModel[formControl['model']]">
 								<div class="file-preview">
@@ -611,18 +666,27 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
+							<label for="{{ formControl['model'] }}" class="file-input-trigger-button">
+								Upload File(s)
+							</label>
+							
 							<input type="file" 
 									name="{{ formControl['model'] }}"
 									id="{{ formControl['model'] }}"
 									ng-model="formGeneratorVm.templateModel[formControl['model']]"
 									ng-class="formControl['attributes']['class']"
+									class="input-type-file"
 									multiple
 									input-attributes
+									accept="{{ formControl['attributes']['accept'] ? formControl['attributes']['accept'] : '*' }}"
 									custom-attributes="formControl['attributes']">
 							<div class="file-preview-container" ng-if="formGeneratorVm.templateModel[formControl['model']]">
 								<div class="file-preview" ng-repeat="image in formGeneratorVm.templateModel[formControl['model']] track by $index">
 									<img ng-src="{{image}}">
-									<button class="btn btn-xs btn-danger remove-image-btn" title="Remove Image" ng-click="formGeneratorVm.removePreview(formControl['model'], $index)">
+									<button type="button" class="btn btn-xs btn-danger remove-image-btn" title="Remove Image" ng-click="formGeneratorVm.removePreview($event, formControl['model'], $index)">
 										&times;
 									</button>
 								</div>
@@ -646,6 +710,9 @@
 									<span class="glyphicon glyphicon-repeat"></span>
 								</button>
 							</label>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
 							<textarea name="{{ formControl['model'] }}" 
 								id="{{ formControl['model'] }}" 
 								ng-class="formControl['attributes']['class']"
@@ -680,11 +747,13 @@
 								<button type="button" class="btn btn-xs btn-danger" ng-click="formGeneratorVm.repeaterRemoveItem(formControl['model'], formControl)" ng-if="formControl['count'] > 1">
 									<span class="glyphicon glyphicon-minus-sign"></span>
 								</button>
+								<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo([formControl['model']], column)" title="Undo">
+									<span class="glyphicon glyphicon-repeat"></span>
+								</button>
 							</label>
-							
-							<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo([formControl['model']], column)" title="Undo">
-								<span class="glyphicon glyphicon-repeat"></span>
-							</button>
+							<div ng-if="formControl['container_attributes']['description']" class="field-description">
+								{{ formControl['container_attributes']['description'] }}
+							</div>
 
 							<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 								ng-class="formControl.container_attributes['class']">
