@@ -33,18 +33,20 @@
 			if errors.length isnt 0 then errors else no
 		validateRepeaterControls: (parentControl, controller) =>
 			errors = []
+			_.set(parentControl, "child_errors", [])
 			controls = controller.templateValues[parentControl['model']]
-			console.log controls
-			controls.map((control) => 
+			controls.map((control, key) => 
 				return if control['rules'] is undefined
 				control['errors'] = []
 				controlIndex = controller.templateValues[parentControl['model']].findIndex((element, index) ->
 					element['model'] is control['model']
 					)
 				ruleNames = Object.keys(control['rules'])
+
 				for i in [0...ruleNames.length]
 					for count in [0...parentControl['count']]
-						errors.push(@checkControlRules(ruleNames[i], control, _.get(controller.templateModel, "[#{parentControl['model']}][#{control['model']}][#{count}]"), control['errors']))
+						if _.get(parentControl, "child_errors.#{control['model']}.#{count}") is undefined then _.set(parentControl, "child_errors.#{control['model']}.#{count}", [])
+						errors.push(@checkControlRules(ruleNames[i], control, _.get(controller.templateModel, "[#{parentControl['model']}][#{control['model']}][#{count}]"), parentControl['child_errors'][control['model']][count]))
 				return
 				)
 			errors = @filterErrors(errors)
@@ -52,26 +54,26 @@
 		checkControlRules: (rule, control, model, controlErrors) => 
 			if rule is 'required' and (control['rules']['required'] > 0 or control['rules']['required'] is 'true')
 				if model is undefined or model is '' or model is null
-					label = (control['label']).replace /[^\w\s]+/g, ''
+					label = (control['label']).replace /[?]+/g, ''
 					controlErrors.push(label + ' field is required.')
 					return label + ' field is required.'
 			else if rule is 'min'
 				return if model is undefined
 				if model.length < control['rules']['min']
-					label = (control['label']).replace /[^\w\s]+/g, ''
+					label = (control['label']).replace /[?]+/g, ''
 					controlErrors.push("#{label} must not be less than #{control['rules']['min']} characters.")
 					return "#{label} must not be less than #{control['rules']['min']} characters."
 			else if rule is 'max'
 				return if model is undefined
 				if model.length > control['rules']['max']
-					label = (control['label']).replace /[^\w\s]+/g, ''
+					label = (control['label']).replace /[?]+/g, ''
 					controlErrors.push("#{label} must not be more than #{control['rules']['max']} characters.")
 					return "#{label} must not be more than #{control['rules']['max']} characters."
 			else if rule is 'email' and (control['rules']['email'] > 0 or control['rules']['email'] is 'true')
 				return if model is undefined
 				emailValidator = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm
 				if !emailValidator.test(model)
-					label = (control['label']).replace /[^\w\s]+/g, ''
+					label = (control['label']).replace /[?]+/g, ''
 					controlErrors.push("#{label} must be a valid email address.")
 					return "#{label} must be a valid email address."
 			else if rule is 'dimension'
@@ -79,7 +81,7 @@
 				dimension = (control['rules']['dimension']).split(',')
 				width = dimension[0]
 				height = dimension[1]
-				label = (control['label']).replace /[^\w\s]+/g, ''
+				label = (control['label']).replace /[?]+/g, ''
 				if model instanceof Array
 					for i in [0...model.length]
 						imageError = @validateDimension(model[i], width, height, label)

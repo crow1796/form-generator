@@ -58,6 +58,10 @@
 		display: inline !important;
 	}
 
+	.repeater-group:hover > .undo-button{
+		display: inline !important;	
+	}
+
 	.field-label{
 		height: 22px;
 		line-height: 22px;
@@ -660,7 +664,8 @@
 						</div> <!-- /If type is textarea -->
 
 						<!-- If type is repeater -->
-						<div ng-if="formControl['type'] == 'repeater'" ng-class="formControl.container_attributes['class']" ng-hide="formControl['container_attributes']['hidden'] && formControl['container_attributes']['hidden'] == 'true'">
+						<div ng-if="formControl['type'] == 'repeater'" ng-class="formControl.container_attributes['class']" ng-hide="formControl['container_attributes']['hidden'] && formControl['container_attributes']['hidden'] == 'true'"
+						class="repeater-group">
 							<label for="" id="{{ formControl['model'] }}_header" class="repeater-header">
 								{{ formControl['label'] }}
 								<span ng-if="formControl['rules']['required'] != undefined && formControl['rules']['required'] == 'true' || formControl['rules']['required'] == true || formControl['rules']['required'] == 1" class="field-required-icon">
@@ -676,6 +681,10 @@
 									<span class="glyphicon glyphicon-minus-sign"></span>
 								</button>
 							</label>
+							
+							<button type="button" class="btn btn-xs btn-danger undo-button" ng-click="formGeneratorVm.undo([formControl['model']], column)" title="Undo">
+								<span class="glyphicon glyphicon-repeat"></span>
+							</button>
 
 							<div ng-repeat="count in formGeneratorVm.range(0, formControl['count'], 1)" class="row"
 								ng-class="formControl.container_attributes['class']">
@@ -705,8 +714,8 @@
 												placeholder="Enter {{ column['label'] }}" input-attributes
 												ng-change="formGeneratorVm.watchControl(column, [formControl['model'], column['model'], count])"
 												custom-attributes="formControl['attributes']">
-										<div class="field-errors-container" ng-if="column['errors'].length > 0">
-											<p ng-repeat="error in column['errors']">
+										<div class="field-errors-container" ng-if="formControl['child_errors'][column['model']][count].length > 0">
+											<p ng-repeat="error in formControl['child_errors'][column['model']][count] track by $index">
 												{{ error }}
 											</p>
 										</div>

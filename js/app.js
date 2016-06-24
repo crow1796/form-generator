@@ -705,10 +705,10 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
     Validator.prototype.validateRepeaterControls = function(parentControl, controller) {
       var controls, errors;
       errors = [];
+      _.set(parentControl, "child_errors", []);
       controls = controller.templateValues[parentControl['model']];
-      console.log(controls);
       controls.map((function(_this) {
-        return function(control) {
+        return function(control, key) {
           var controlIndex, count, i, j, k, ref, ref1, ruleNames;
           if (control['rules'] === void 0) {
             return;
@@ -720,7 +720,10 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
           ruleNames = Object.keys(control['rules']);
           for (i = j = 0, ref = ruleNames.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
             for (count = k = 0, ref1 = parentControl['count']; 0 <= ref1 ? k < ref1 : k > ref1; count = 0 <= ref1 ? ++k : --k) {
-              errors.push(_this.checkControlRules(ruleNames[i], control, _.get(controller.templateModel, "[" + parentControl['model'] + "][" + control['model'] + "][" + count + "]"), control['errors']));
+              if (_.get(parentControl, "child_errors." + control['model'] + "." + count) === void 0) {
+                _.set(parentControl, "child_errors." + control['model'] + "." + count, []);
+              }
+              errors.push(_this.checkControlRules(ruleNames[i], control, _.get(controller.templateModel, "[" + parentControl['model'] + "][" + control['model'] + "][" + count + "]"), parentControl['child_errors'][control['model']][count]));
             }
           }
         };
@@ -733,7 +736,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
       var dimension, emailValidator, height, i, imageError, j, label, ref, width;
       if (rule === 'required' && (control['rules']['required'] > 0 || control['rules']['required'] === 'true')) {
         if (model === void 0 || model === '' || model === null) {
-          label = control['label'].replace(/[^\w\s]+/g, '');
+          label = control['label'].replace(/[?]+/g, '');
           controlErrors.push(label + ' field is required.');
           return label + ' field is required.';
         }
@@ -742,7 +745,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
           return;
         }
         if (model.length < control['rules']['min']) {
-          label = control['label'].replace(/[^\w\s]+/g, '');
+          label = control['label'].replace(/[?]+/g, '');
           controlErrors.push(label + " must not be less than " + control['rules']['min'] + " characters.");
           return label + " must not be less than " + control['rules']['min'] + " characters.";
         }
@@ -751,7 +754,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
           return;
         }
         if (model.length > control['rules']['max']) {
-          label = control['label'].replace(/[^\w\s]+/g, '');
+          label = control['label'].replace(/[?]+/g, '');
           controlErrors.push(label + " must not be more than " + control['rules']['max'] + " characters.");
           return label + " must not be more than " + control['rules']['max'] + " characters.";
         }
@@ -761,7 +764,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         }
         emailValidator = /[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}/igm;
         if (!emailValidator.test(model)) {
-          label = control['label'].replace(/[^\w\s]+/g, '');
+          label = control['label'].replace(/[?]+/g, '');
           controlErrors.push(label + " must be a valid email address.");
           return label + " must be a valid email address.";
         }
@@ -772,7 +775,7 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
         dimension = control['rules']['dimension'].split(',');
         width = dimension[0];
         height = dimension[1];
-        label = control['label'].replace(/[^\w\s]+/g, '');
+        label = control['label'].replace(/[?]+/g, '');
         if (model instanceof Array) {
           for (i = j = 0, ref = model.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
             imageError = this.validateDimension(model[i], width, height, label);
