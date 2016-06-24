@@ -742,8 +742,8 @@
 												custom-attributes="column['attributes']">
 												<option style="display:none" value="">Select {{ column['label'] }}</option>
 										</select>
-										<div class="field-errors-container" ng-if="column['errors'].length > 0">
-											<p ng-repeat="error in column['errors']">
+										<div class="field-errors-container" ng-if="formControl['child_errors'][column['model']][count].length > 0">
+											<p ng-repeat="error in formControl['child_errors'][column['model']][count] track by $index">
 												{{ error }}
 											</p>
 										</div>
@@ -823,8 +823,8 @@
 													ng-focus="formGeneratorVm.setOtherRadio([formControl['model'],column['model'], count], column['model'] + '_other')"
 													placeholder="Please specify">
 										</label>
-										<div class="field-errors-container" ng-if="column['errors'].length > 0">
-											<p ng-repeat="error in column['errors']">
+										<div class="field-errors-container" ng-if="formControl['child_errors'][column['model']][count].length > 0">
+											<p ng-repeat="error in formControl['child_errors'][column['model']][count] track by $index">
 												{{ error }}
 											</p>
 										</div>
@@ -854,8 +854,8 @@
 									</div> <!-- /If type is textarea -->
 								</div>
 							</div>
-							<div class="field-errors-container" ng-if="formControl['errors'].length > 0">
-								<p ng-repeat="error in formControl['errors']">
+							<div class="field-errors-container" ng-if="formControl['child_errors'][column['model']][count].length > 0">
+								<p ng-repeat="error in formControl['child_errors'][column['model']][count] track by $index">
 									{{ error }}
 								</p>
 							</div>
